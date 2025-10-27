@@ -1,8 +1,10 @@
 name: Autograding Tests
+
 on:
   push:
     branches:
       main
+
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
@@ -24,10 +26,9 @@ jobs:
         files: |
           temp/protos/lab7/epuck.proto: protos/epuck.proto
           temp/protos/lab7/ds.proto: protos/ds.proto
-    
-    # - name: Building workspace...
-    #   id: build
-    #   uses: ashutoshvarma/action-cmake-build@master
+    - name: Building workspace
+      id: build
+      uses: ./.github/actions/cmake-runner
     # - name: Starting up Webots simulation...
     #   uses: ./.github/workflows/webots-simulator.yml
     #   with:

@@ -1,0 +1,92 @@
+name: CMake Build Runner
+description: Configures and builds a CMake project with configurable options
+author: dennuguyen
+
+inputs:
+  source-dir:
+    description: "Source directory containing CMakeLists.txt"
+    required: false
+    default: "."
+  build-dir:
+    description: "Build directory where CMake will generate build files"
+    required: false
+    default: "build"
+  build-type:
+    description: "CMake build type (Debug, Release, RelWithDebInfo, MinSizeRel)"
+    required: false
+    default: "Release"
+  cmake-args:
+    description: "Additional CMake arguments for configure step"
+    required: false
+    default: ""
+  build-target:
+    description: "Specific target to build. Builds all targets if not specified"
+    required: false
+    default: ""
+  parallel:
+    description: "Number of parallel jobs for build step. Uses system CPU count if not specified"
+    required: false
+    default: ""
+
+outputs:
+  build-dir:
+    description: "Path to the build directory used"
+    value: ${{ steps.get-build-dir.outputs.path }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get absolute build directory
+      id: get-build-dir
+      shell: bash
+      run: |
+        build_dir="${{ inputs.build-dir }}"
+        if [[ "$build_dir" != /* ]]; then
+          # Convert relative path to absolute
+          build_dir="$GITHUB_WORKSPACE/$build_dir"
+        fi
+        echo "path=$build_dir" >> $GITHUB_OUTPUT
+        echo "Using build directory: $build_dir" >&2
+
+    - name: Configure CMake
+      shell: bash
+      run: |
+        src_dir="${{ inputs.source-dir }}"
+        if [[ "$src_dir" != /* ]]; then
+          # Convert relative path to absolute
+          src_dir="$GITHUB_WORKSPACE/$src_dir"
+        fi
+        
+        mkdir -p "${{ steps.get-build-dir.outputs.path }}"
+        cd "${{ steps.get-build-dir.outputs.path }}"
+        
+        cmake_args=()
+        # Add build type
+        cmake_args+=(-DCMAKE_BUILD_TYPE=${{ inputs.build-type }})
+        
+        # Add user-provided args if any
+        if [ ! -z "${{ inputs.cmake-args }}" ]; then
+          cmake_args+=(${{ inputs.cmake-args }})
+        fi
+        
+        echo "Configuring CMake with args: ${cmake_args[@]}" >&2
+        cmake "${cmake_args[@]}" "$src_dir"
+
+    - name: Build with CMake
+      shell: bash
+      run: |
+        cd "${{ steps.get-build-dir.outputs.path }}"
+        
+        build_args=()
+        # Add parallel jobs if specified
+        if [ ! -z "${{ inputs.parallel }}" ]; then
+          build_args+=(-j ${{ inputs.parallel }})
+        fi
+        
+        # Add specific target if specified
+        if [ ! -z "${{ inputs.build-target }}" ]; then
+          build_args+=("${{ inputs.build-target }}")
+        fi
+        
+        echo "Building with args: ${build_args[@]}" >&2
+        cmake --build . "${build_args[@]}"
