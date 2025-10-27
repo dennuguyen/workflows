@@ -1,10 +1,8 @@
 name: Autograding Tests
 on:
-- push:
-  branches:
-    - main
-- workflow_dispatch
-- repository_dispatch
+  push:
+    branches:
+      main
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
