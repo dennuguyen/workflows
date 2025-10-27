@@ -1,0 +1,53 @@
+name: Autograding Tests
+on:
+- push:
+  branches:
+    - main
+- workflow_dispatch
+- repository_dispatch
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Creating workspace...
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+    - name: Checking out test code...
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+        path: temp
+    - name: Print (debug)
+      run: ls -R .
+    # - name: Copying test code into workspace...
+    #   uses: nearform-actions/github-action-copy-files@v1
+    #   with:
+    #     source: temp/
+    #     destination: ./
+    # - name: Building workspace...
+    #   id: build
+    #   uses: ashutoshvarma/action-cmake-build@master
+    # - name: Starting up Webots simulation...
+    #   uses: ./.github/workflows/webots-simulator.yml
+    #   with:
+    #     world: "worlds/arena.wbt"
+    # - name: Stage 1
+    #   id: stage-1
+    #   uses: classroom-resources/autograding-command-grader@v1
+    #   with:
+    #     test-name: Stage 1
+    #     setup-command: "./build.sh"
+    #     command: "./build/TestSuite [Stage 1]"
+    #     timeout: 10
+
+
+
+    # - name: Autograding Reporter
+    #   uses: classroom-resources/autograding-grading-reporter@v1
+    #   env:
+    #     COMPILATION_RESULTS: "${{steps.compilation.outputs.result}}"
+    #     STAGE-1_RESULTS: "${{steps.stage-1.outputs.result}}"
+    #   with:
+    #     runners: compilation,stage-1
