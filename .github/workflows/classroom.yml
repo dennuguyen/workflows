@@ -24,7 +24,7 @@ jobs:
       uses: ./.github/actions/copy-files
       with:
         files: |
-          temp/protos/epuck.proto: protos/epuck.proto
+          temp/protos/lab7/epuck.proto: protos/epuck.proto
     - name: Print (debug 2)
       run: ls -R . && cat protos/epuck.proto
     
