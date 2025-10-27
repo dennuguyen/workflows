@@ -21,10 +21,10 @@ jobs:
     - name: Print (debug)
       run: ls -R .
     - name: Copying test code into workspace...
-      uses: nearform-actions/github-action-copy-files@v1
+      uses: ./.github/actions/copy-files
       with:
-        source: temp/
-        destination: ./
+        files: |
+          temp/protos/epuck.proto: protos/epuck.proto
     - name: Print (debug 2)
       run: ls -R . && cat protos/epuck.proto
     

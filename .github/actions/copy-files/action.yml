@@ -1,0 +1,72 @@
+name: Copy files into workspace
+description: "Copy files into the runner workspace according to a mapping. Each mapping line is 'source: target' (paths relative to GITHUB_WORKSPACE)."
+author: dennuguyen
+inputs:
+  files:
+    description: |
+      Multiline mapping where each non-empty line is "source: target".
+      Paths are relative to the repository workspace. Example:
+      path_to_file_replacing: path_to_file_to_replace
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Show files input (debug)
+      shell: bash
+      run: |
+        echo "FILES input:" >&2
+        echo "<<EOF" >&2
+        echo "${{ inputs.files }}" >&2
+        echo "EOF" >&2
+
+    - name: Copy mapped files
+      shell: bash
+      run: |
+        set -euo pipefail
+        IFS=$'\n'
+        files_input="${{ inputs.files }}"
+        if [ -z "$(echo "$files_input" | tr -d '[:space:]')" ]; then
+          echo "No mapping lines provided. Nothing to copy."
+          exit 0
+        fi
+
+        for line in $files_input; do
+          # Trim leading/trailing whitespace
+          line="$(echo "$line" | sed -e 's/^\s*//' -e 's/\s*$//')"
+          # Skip empty lines or comments
+          if [ -z "$line" ] || [[ "$line" =~ ^# ]]; then
+            continue
+          fi
+
+          # Split on first ':'
+          if ! echo "$line" | grep -q ':'; then
+            echo "Invalid mapping line (no ':'): '$line'" >&2
+            exit 1
+          fi
+          src="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\1/' | sed -e 's/^\s*//' -e 's/\s*$//')"
+          dst="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\2/' | sed -e 's/^\s*//' -e 's/\s*$//')"
+
+          src_path="$GITHUB_WORKSPACE/$src"
+          dst_path="$GITHUB_WORKSPACE/$dst"
+
+          if [ ! -e "$src_path" ]; then
+            echo "Source path does not exist: $src_path" >&2
+            exit 1
+          fi
+
+          dst_dir=$(dirname "$dst_path")
+          mkdir -p "$dst_dir"
+
+          if [ -d "$src_path" ]; then
+            echo "Copying directory $src -> $dst" >&2
+            # Copy directory contents into target directory
+            cp -a "$src_path/." "$dst_path/" || true
+          else
+            echo "Copying file $src -> $dst" >&2
+            cp -a "$src_path" "$dst_path"
+          fi
+        done
+
+    - name: List workspace (debug)
+      shell: bash
+      run: ls -R .
