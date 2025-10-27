@@ -1,24 +1,15 @@
 name: Copy files into workspace
-description: "Copy files into the runner workspace according to a mapping. Each mapping line is 'source: target' (paths relative to GITHUB_WORKSPACE)."
+description: |
+  Copy files into the runner workspace according to a mapping. Each mapping line is 'source: target' (paths relative to GITHUB_WORKSPACE).
 author: dennuguyen
 inputs:
   files:
     description: |
-      Multiline mapping where each non-empty line is "source: target".
-      Paths are relative to the repository workspace. Example:
-      path_to_file_replacing: path_to_file_to_replace
+      Multiline mapping where each non-empty line is "source: target". Paths are relative to the repository workspace. For example: path_to_file_replacing: path_to_file_to_replace
     required: true
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - name: Show files input (debug)
-      shell: bash
-      run: |
-        echo "FILES input:" >&2
-        echo "<<EOF" >&2
-        echo "${{ inputs.files }}" >&2
-        echo "EOF" >&2
-
     - name: Copy mapped files
       shell: bash
       run: |
@@ -64,7 +55,3 @@ runs:
             cp -a "$src" "$dst"
           fi
         done
-
-    - name: List workspace (debug)
-      shell: bash
-      run: ls -R .

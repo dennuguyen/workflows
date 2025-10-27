@@ -24,8 +24,6 @@ jobs:
         files: |
           temp/protos/lab7/epuck.proto: protos/epuck.proto
           temp/protos/lab7/ds.proto: protos/ds.proto
-    - name: Print (debug 2)
-      run: cat protos/ds.proto && cat protos/epuck.proto
     
     # - name: Building workspace...
     #   id: build
