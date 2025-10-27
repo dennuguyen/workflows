@@ -8,25 +8,24 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
-    - name: Creating workspace...
+    - name: Creating workspace
       uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Checking out test code...
+    - name: Checking out test code
       uses: actions/checkout@v5
       with:
         fetch-depth: 0
         repository: UNSW-MTRN2500/webots-utils
         path: temp
-    - name: Print (debug)
-      run: ls -R .
-    - name: Copying test code into workspace...
+    - name: Copying test code into workspace
       uses: ./.github/actions/copy-files
       with:
         files: |
           temp/protos/lab7/epuck.proto: protos/epuck.proto
+          temp/protos/lab7/ds.proto: protos/ds.proto
     - name: Print (debug 2)
-      run: ls -R . && cat protos/epuck.proto
+      run: cat protos/epuck.proto && cat protos/epuck.proto
     
     # - name: Building workspace...
     #   id: build
