@@ -29,6 +29,8 @@ jobs:
     - name: Building workspace
       id: build
       uses: ./.github/actions/cmake-runner
+      with:
+        build-target: test_stage1
     # - name: Starting up Webots simulation...
     #   uses: ./.github/workflows/webots-simulator.yml
     #   with:
