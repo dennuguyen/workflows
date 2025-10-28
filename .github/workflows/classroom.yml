@@ -30,6 +30,10 @@ jobs:
           temp/protos/lab7/ds.proto: protos/ds.proto
     - name: Building workspace
       uses: lukka/run-cmake@v10
+      with:
+        configurePreset: g++
+        buildPreset: g++
+        testPreset: g++
     # - name: Starting up Webots simulation...
     #   uses: ./.github/workflows/webots-simulator.yml
     #   with:

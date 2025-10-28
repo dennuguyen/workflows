@@ -7,7 +7,7 @@
     },
     "configurePresets": [
         {
-            "name": "g++-release",
+            "name": "g++",
             "displayName": "Release build using g++",
             "description": "Configure using the GNU g++ compiler for Release builds",
             "generator": "Unix Makefiles",
@@ -21,16 +21,16 @@
     ],
     "buildPresets": [
         {
-            "name": "g++-release",
-            "configurePreset": "g++-release",
-            "description": "Build using g++ Release preset",
+            "name": "g++",
+            "configurePreset": "g++",
+            "description": "Build using g++ preset",
             "jobs": 4
         }
     ],
     "testPresets": [
         {
-            "name": "test-release",
-            "configurePreset": "g++-release",
+            "name": "g++",
+            "configurePreset": "g++",
             "output": {
                 "outputOnFailure": true
             }
