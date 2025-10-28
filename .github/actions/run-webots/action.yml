@@ -12,8 +12,11 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Run Webots in headless mode
+  - name: Start Webots Docker container
     shell: bash
     run: |
-      docker run -e QT_QPA_PLATFORM=offscreen cyberbotics/webots:latest \
-      webots --stdout --stderr --batch --no-rendering --mode=realtime ${{ inputs.world }}
+      docker run cyberbotics/webots:latest
+  - name: Run Webots headless
+    shell: bash
+    run: |
+      xvfb-run webots --stdout --stderr --batch --no-rendering --mode=realtime ${{ inputs.world }}
