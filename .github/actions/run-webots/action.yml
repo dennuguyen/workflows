@@ -12,11 +12,7 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Start Webots Docker container
+  - name: Run Webots in headless mode
     shell: bash
     run: |
-      docker run -it cyberbotics/webots:latest
-  - name: Run Webots headless
-    shell: bash
-    run: |
-      webots --stdout --stderr --batch --mode=realtime ${{ inputs.world }}
+      docker run --rm cyberbotics/webots:latest webots --stdout --stderr --batch --mode=realtime ${{ inputs.world }}
