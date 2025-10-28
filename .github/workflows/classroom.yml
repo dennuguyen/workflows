@@ -31,7 +31,9 @@ jobs:
     - name: Building workspace
       uses: lukka/run-cmake@v10
       with:
-          configurePreset: ""
+          configurePreset: release
+          buildPreset: release
+          testPreset: release
     # - name: Starting up Webots simulation...
     #   uses: ./.github/workflows/webots-simulator.yml
     #   with:
