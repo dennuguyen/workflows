@@ -1,0 +1,20 @@
+name: Run Webots simulator
+description: |
+  Run Webots in headless mode with the specified world file.
+author: dennuguyen
+
+inputs:
+  world:
+    description: "World file to run"
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+  - name: Start Webots Docker container
+    run: |
+      docker run -it cyberbotics/webots:latest
+  - name: Run Webots headless
+    run: |
+      webots --stdout --stderr --batch --mode=realtime ${{ inputs.world }}

@@ -34,10 +34,10 @@ jobs:
         configurePreset: release
         buildPreset: release
         testPreset: release
-    # - name: Starting up Webots simulation...
-    #   uses: ./.github/workflows/webots-simulator.yml
-    #   with:
-    #     world: "worlds/arena.wbt"
+    - name: Starting up Webots simulation...
+      uses: ./.github/workflows/webots-simulator.yml
+      with:
+        world: "worlds/arena.wbt"
     # - name: Stage 1
     #   id: stage-1
     #   uses: classroom-resources/autograding-command-grader@v1
