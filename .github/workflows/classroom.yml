@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
+    - name: Install gtest
+      uses: MarkusJx/googletest-installer@v1.1
     - name: Creating workspace
       uses: actions/checkout@v5
       with:
