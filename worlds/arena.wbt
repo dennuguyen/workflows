@@ -1,0 +1,124 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/CircleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/UNSW-MTRN2500/webots-utils/42d0bd46a90c68ac84119f13f0973d601e035b5a/protos/lab7/epuck.proto"
+
+WorldInfo {
+  ERP 0.8
+}
+Viewpoint {
+  orientation -0.3154160422864581 0.5440561750101793 0.7775060120035346 1.2814348851688506
+  position -0.8406496266158546 -1.4720294061324657 1.441976213713267
+}
+TexturedBackgroundLight {
+  castShadows FALSE
+}
+CircleArena {
+  radius 0.7
+  floorTileSize 0.2 0.2
+}
+DEF chaser epuck {
+  name "chaser"
+  controller "chaser_controller"
+  supervisor TRUE
+  version "2"
+  emitter_channel 0
+  receiver_channel 0
+  turretSlot [
+    Solid {
+      translation 0.01 0 0
+      children [
+        Shape {
+          appearance PBRAppearance {
+            transparency 0.99999
+          }
+          geometry Cylinder {
+            height 0.1
+            radius 0.03
+          }
+          castShadows FALSE
+        }
+      ]
+    }
+    Lidar {
+      fieldOfView 6.28
+      numberOfLayers 1
+      maxRange 0.5
+    }
+  ]
+  groundSensorsSlot [
+    Emitter {
+      name "freeze emitter"
+      range 0.1
+      channel -1
+    }
+    Emitter {
+      name "warning emitter"
+      range 0.7
+      channel -1
+    }
+  ]
+}
+DEF runner1 epuck {
+  translation 0.35 0.35 0
+  rotation 0 0 1 -2.3561953071795863
+  name "runner1"
+  controller "runner_controller"
+  emitter_channel -1
+  receiver_channel -1
+  turretSlot [
+    Lidar {
+      fieldOfView 6.28
+      numberOfLayers 1
+      maxRange 0.4
+    }
+  ]
+  groundSensorsSlot [
+    Compass {
+    }
+    GPS {
+    }
+  ]
+}
+DEF runner2 epuck {
+  translation -0.4 0 0
+  name "runner2"
+  controller "runner_controller"
+  emitter_channel -1
+  receiver_channel -1
+  turretSlot [
+    Lidar {
+      fieldOfView 6.28
+      numberOfLayers 1
+      maxRange 0.4
+    }
+  ]
+  groundSensorsSlot [
+    Compass {
+    }
+    GPS {
+    }
+  ]
+}
+DEF runner3 epuck {
+  translation 0.35 -0.35 0
+  rotation 0 0 1 2.35619
+  name "runner3"
+  controller "runner_controller"
+  emitter_channel -1
+  receiver_channel -1
+  turretSlot [
+    Lidar {
+      fieldOfView 6.28
+      numberOfLayers 1
+      maxRange 0.4
+    }
+  ]
+  groundSensorsSlot [
+    Compass {
+    }
+    GPS {
+    }
+  ]
+}

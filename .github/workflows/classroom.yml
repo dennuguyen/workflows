@@ -35,7 +35,7 @@ jobs:
         buildPreset: release
         testPreset: release
     - name: Starting up Webots simulation...
-      uses: ./.github/workflows/webots-simulator.yml
+      uses: ./.github/actions/run-webots
       with:
         world: "worlds/arena.wbt"
     # - name: Stage 1
