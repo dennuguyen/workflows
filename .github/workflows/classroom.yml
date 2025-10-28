@@ -33,11 +33,14 @@ jobs:
       with:
         configurePreset: release
         buildPreset: release
-        testPreset: release
-    - name: Starting up Webots simulation...
-      uses: ./.github/actions/run-webots
-      with:
-        world: "worlds/arena.wbt"
+        # testPreset: release
+    # - name: Starting up Webots simulation...
+    #   uses: ./.github/actions/run-webots
+    #   timeout-minutes: 1
+    #   with:
+    #     world: "worlds/arena.wbt"
+  
+
     # - name: Stage 1
     #   id: stage-1
     #   uses: classroom-resources/autograding-command-grader@v1
@@ -47,7 +50,11 @@ jobs:
     #     command: "./build/TestSuite [Stage 1]"
     #     timeout: 10
 
+    - name: Stage 1
+      run: ./build/test_stage1
 
+    - name: Stage 2
+      run: ./build/test_stage2
 
     # - name: Autograding Reporter
     #   uses: classroom-resources/autograding-grading-reporter@v1

@@ -17,3 +17,4 @@ macro(build_gtest_suite TEST)
 endmacro()
 
 build_gtest_suite(test_stage1)
+build_gtest_suite(test_stage2)
