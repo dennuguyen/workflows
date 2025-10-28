@@ -15,4 +15,5 @@ runs:
   - name: Run Webots in headless mode
     shell: bash
     run: |
-      docker run --rm cyberbotics/webots:latest webots --stdout --stderr --batch --no-rendering --mode=realtime ${{ inputs.world }}
+      docker run -e QT_QPA_PLATFORM=offscreen cyberbotics/webots:latest \
+      webots --stdout --stderr --batch --no-rendering --mode=realtime ${{ inputs.world }}
