@@ -15,4 +15,4 @@ runs:
   - name: Run Webots in headless mode
     shell: bash
     run: |
-      docker run --rm cyberbotics/webots:latest webots --stdout --stderr --batch --mode=realtime ${{ inputs.world }}
+      docker run --rm cyberbotics/webots:latest webots --stdout --stderr --batch --no-rendering --mode=realtime ${{ inputs.world }}
