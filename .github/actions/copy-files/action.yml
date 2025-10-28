@@ -12,48 +12,48 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Copy mapped files
-      shell: bash
-      run: |
-        set -euo pipefail
-        IFS=$'\n'
-        files_input="${{ inputs.files }}"
-        if [ -z "$(echo "$files_input" | tr -d '[:space:]')" ]; then
-          echo "No mapping lines provided. Nothing to copy."
-          exit 0
+  - name: Copy mapped files
+    shell: bash
+    run: |
+      set -euo pipefail
+      IFS=$'\n'
+      files_input="${{ inputs.files }}"
+      if [ -z "$(echo "$files_input" | tr -d '[:space:]')" ]; then
+        echo "No mapping lines provided. Nothing to copy."
+        exit 0
+      fi
+
+      for line in $files_input; do
+        # Trim leading/trailing whitespace
+        line="$(echo "$line" | sed -e 's/^\s*//' -e 's/\s*$//')"
+
+        # Skip empty lines or comments
+        if [ -z "$line" ] || [[ "$line" =~ ^# ]]; then
+          continue
         fi
 
-        for line in $files_input; do
-          # Trim leading/trailing whitespace
-          line="$(echo "$line" | sed -e 's/^\s*//' -e 's/\s*$//')"
+        # Split on first ':'
+        if ! echo "$line" | grep -q ':'; then
+          echo "Invalid mapping line (no ':'): '$line'" >&2
+          exit 1
+        fi
+        src="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\1/' | sed -e 's/^\s*//' -e 's/\s*$//')"
+        dst="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\2/' | sed -e 's/^\s*//' -e 's/\s*$//')"
 
-          # Skip empty lines or comments
-          if [ -z "$line" ] || [[ "$line" =~ ^# ]]; then
-            continue
-          fi
+        if [ ! -e "$src" ]; then
+          echo "Source path does not exist: $src" >&2
+          exit 1
+        fi
 
-          # Split on first ':'
-          if ! echo "$line" | grep -q ':'; then
-            echo "Invalid mapping line (no ':'): '$line'" >&2
-            exit 1
-          fi
-          src="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\1/' | sed -e 's/^\s*//' -e 's/\s*$//')"
-          dst="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\2/' | sed -e 's/^\s*//' -e 's/\s*$//')"
+        dst_dir=$(dirname "$dst")
+        mkdir -p "$dst_dir"
 
-          if [ ! -e "$src" ]; then
-            echo "Source path does not exist: $src" >&2
-            exit 1
-          fi
-
-          dst_dir=$(dirname "$dst")
-          mkdir -p "$dst_dir"
-
-          if [ -d "$src" ]; then
-            echo "Copying directory $src -> $dst" >&2
-            # Copy directory contents into target directory
-            cp -a "$src/." "$dst/" || true
-          else
-            echo "Copying file $src -> $dst" >&2
-            cp -a "$src" "$dst"
-          fi
-        done
+        if [ -d "$src" ]; then
+          echo "Copying directory $src -> $dst" >&2
+          # Copy directory contents into target directory
+          cp -a "$src/." "$dst/" || true
+        else
+          echo "Copying file $src -> $dst" >&2
+          cp -a "$src" "$dst"
+        fi
+      done
