@@ -1,6 +1,6 @@
-name: Copy files into workspace
+name: Copy files using map
 description: |
-  Copy files into the runner workspace according to a mapping. Each mapping line is 'source: target' (paths relative to GITHUB_WORKSPACE).
+  Copy files according to a mapping. Each mapping line is 'source: target' (paths relative to GITHUB_WORKSPACE).
 author: dennuguyen
 
 inputs:
