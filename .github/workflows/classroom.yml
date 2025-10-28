@@ -29,10 +29,7 @@ jobs:
           temp/protos/lab7/epuck.proto: protos/epuck.proto
           temp/protos/lab7/ds.proto: protos/ds.proto
     - name: Building workspace
-      id: build
-      uses: ./.github/actions/cmake-runner
-      with:
-        build-target: test_stage1
+      uses: lukka/run-cmake@v10
     # - name: Starting up Webots simulation...
     #   uses: ./.github/workflows/webots-simulator.yml
     #   with:
