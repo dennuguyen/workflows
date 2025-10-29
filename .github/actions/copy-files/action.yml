@@ -19,7 +19,7 @@ runs:
       import shutil
       import sys
 
-      mapping = os.getenv("INPUT_MAPPING")
+      mapping = os.getenv("inputs.mapping")
       if not mapping:
         print("No mapping lines provided. Nothing to copy.")
         exit(0)
