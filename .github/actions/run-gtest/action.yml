@@ -17,7 +17,7 @@ runs:
       pip-install: clang pydantic
   - name: Discover gtest cases
     shell: bash
-    run: python3 ./.github/acions/run-gtest/discover_tests.py ${{ inputs.test_file }}
+    run: python3 ./.github/actions/run-gtest/discover_tests.py ${{ inputs.test_file }}
   # - name: Run test executable
   #   shell: bash
   #   run: ${{ inputs.executable }} --gtest_filter=${{ testcase_id }}
