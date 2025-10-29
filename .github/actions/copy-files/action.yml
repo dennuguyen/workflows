@@ -19,7 +19,7 @@ runs:
       import shutil
       import sys
 
-      mapping = " ${{ inputs.mapping }} "
+      mapping = """${{ inputs.mapping }}"""
       if not mapping.strip():
         print("No mapping lines provided. Nothing to copy.")
         exit(0)
