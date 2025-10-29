@@ -13,47 +13,36 @@ runs:
   using: composite
   steps:
   - name: Copy mapped files
-    shell: bash
+    shell: python
     run: |
-      set -euo pipefail
-      IFS=$'\n'
-      files_input="${{ inputs.files }}"
-      if [ -z "$(echo "$files_input" | tr -d '[:space:]')" ]; then
-        echo "No mapping lines provided. Nothing to copy."
-        exit 0
-      fi
+      import os
+      import shutil
+      import sys
 
-      for line in $files_input; do
-        # Trim leading/trailing whitespace
-        line="$(echo "$line" | sed -e 's/^\s*//' -e 's/\s*$//')"
+      mapping = os.environ.get('inputs.mapping', '')
+      if not mapping.strip():
+        print("No mapping lines provided. Nothing to copy.")
+        exit(0)
 
-        # Skip empty lines or comments
-        if [ -z "$line" ] || [[ "$line" =~ ^# ]]; then
-          continue
-        fi
+      for line in mapping.splitlines():
+        if ":" not in line:
+          print(f"'{line}' is missing ':'", file=sys.stderr)
+          exit(1)
 
-        # Split on first ':'
-        if ! echo "$line" | grep -q ':'; then
-          echo "Invalid mapping line (no ':'): '$line'" >&2
-          exit 1
-        fi
-        src="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\1/' | sed -e 's/^\s*//' -e 's/\s*$//')"
-        dst="$(echo "$line" | sed -E 's/^([^:]+):(.+)$/\2/' | sed -e 's/^\s*//' -e 's/\s*$//')"
+        src, dst = map(str.strip, line.split(":", 1))
+        if not os.path.exists(src):
+          print(f"'{line}' has no existing source path", file=sys.stderr)
+          exit(1)
+        if not dst:
+          print(f"'{line}' is missing destination", file=sys.stderr)
+          exit(1)
 
-        if [ ! -e "$src" ]; then
-          echo "Source path does not exist: $src" >&2
-          exit 1
-        fi
+        if dst.endswith(os.path.sep):
+          os.makedirs(os.path.dirname(dst), exist_ok=True)
 
-        dst_dir=$(dirname "$dst")
-        mkdir -p "$dst_dir"
-
-        if [ -d "$src" ]; then
-          echo "Copying directory $src -> $dst" >&2
-          # Copy directory contents into target directory
-          cp -a "$src/." "$dst/" || true
-        else
-          echo "Copying file $src -> $dst" >&2
-          cp -a "$src" "$dst"
-        fi
-      done
+        if os.path.isdir(src):
+          print(f"Copying directory {src} -> {dst}", file=sys.stderr)
+          shutil.copytree(src, dst, dirs_exist_ok=True)
+        else:
+          print(f"Copying file {src} -> {dst}", file=sys.stderr)
+          shutil.copy2(src, dst)
