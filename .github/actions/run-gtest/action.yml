@@ -15,7 +15,9 @@ runs:
     with:
       python-version: 3.13
       cache: pip
-  - run: pip install -r ./.github/actions/run-gtest/requirements.txt
+  - name: Install dependencies
+    shell: bash
+    run: pip install -r ./.github/actions/run-gtest/requirements.txt
   - name: Discover gtest cases
     shell: bash
     run: python3 ./.github/actions/run-gtest/discover_tests.py ${{ inputs.test_file }}
