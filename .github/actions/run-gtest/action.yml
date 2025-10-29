@@ -14,7 +14,8 @@ runs:
     uses: actions/setup-python@v6
     with:
       python-version: 3.13
-      pip-install: clang pydantic
+      cache: pip
+  - run: pip install -r ./.github/actions/run-gtest/requirements.txt
   - name: Discover gtest cases
     shell: bash
     run: python3 ./.github/actions/run-gtest/discover_tests.py ${{ inputs.test_file }}
