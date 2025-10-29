@@ -28,8 +28,6 @@ jobs:
         mapping: |
           temp/protos/lab7/epuck.proto: protos/epuck.proto
           temp/protos/lab7/ds.proto: protos/ds.proto
-    - name: Print (debug)
-      run: ls -R .
     # - name: Building workspace
     #   uses: lukka/run-cmake@v10
     #   with:
@@ -42,9 +40,10 @@ jobs:
     #   with:
     #     world: "worlds/arena.wbt"
   
-    # - name: Stage 1
-    #   id: stage-1
-    #   run: ./build/test_stage1
+    - name: Stage 1
+      id: stage-1
+      uses: ./.github/actions/run-gtest
+      run: ./build/test_stage1
     # - name: Stage 2
     #   id: stage-2
     #   run: ./build/test_stage2

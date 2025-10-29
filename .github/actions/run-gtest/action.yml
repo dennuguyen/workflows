@@ -1,0 +1,19 @@
+name: Run Google Test cases
+author: dennuguyen
+
+inputs:
+  test_file:
+    description: Test file path
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+  - name: Install Python dependencies
+    run: python3 -m pip install -r requirements.txt
+  - name: Discover gtest cases
+    run: python3 discover_tests.py ${{ inputs.test_file }}
+  # - name: Run test executable
+  #   shell: bash
+  #   run: ${{ inputs.executable }} --gtest_filter=${{ testcase_id }}
