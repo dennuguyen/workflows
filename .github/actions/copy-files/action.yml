@@ -29,6 +29,7 @@ runs:
           print(f"'{line}' is missing ':'", file=sys.stderr)
           exit(1)
 
+        # Split the mapping.
         src, dst = map(str.strip, line.split(":", 1))
         if not os.path.exists(src):
           print(f"'{line}' has no existing source path", file=sys.stderr)
@@ -37,9 +38,13 @@ runs:
           print(f"'{line}' is missing destination", file=sys.stderr)
           exit(1)
 
+        # Create directories if needed.
         if dst.endswith(os.path.sep):
           os.makedirs(os.path.dirname(dst), exist_ok=True)
+        else:
+          os.makedirs(os.path.split(dst)[0], exist_ok=True)
 
+        # Copy over.
         if os.path.isdir(src):
           print(f"Copying directory {src} -> {dst}", file=sys.stderr)
           shutil.copytree(src, dst, dirs_exist_ok=True)
