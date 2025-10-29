@@ -41,9 +41,9 @@ jobs:
     #     world: "worlds/arena.wbt"
   
     - name: Stage 1
-      id: stage-1
       uses: ./.github/actions/run-gtest
-      run: ./build/test_stage1
+      with:
+        test_file: test_stage1.cpp
     # - name: Stage 2
     #   id: stage-2
     #   run: ./build/test_stage2
