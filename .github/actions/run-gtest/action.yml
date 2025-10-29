@@ -11,8 +11,10 @@ runs:
   using: composite
   steps:
   - name: Install Python dependencies
+    shell: python
     run: python3 -m pip install -r requirements.txt
   - name: Discover gtest cases
+    shell: python
     run: python3 discover_tests.py ${{ inputs.test_file }}
   # - name: Run test executable
   #   shell: bash
