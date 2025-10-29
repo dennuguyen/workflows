@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
-    - name: Install gtest
-      uses: MarkusJx/googletest-installer@v1.1
+    # - name: Install gtest
+    #   uses: MarkusJx/googletest-installer@v1.1
     - name: Creating workspace
       uses: actions/checkout@v5
       with:
@@ -25,14 +25,16 @@ jobs:
     - name: Copying test code into workspace
       uses: ./.github/actions/copy-files
       with:
-        files: |
+        mapping: |
           temp/protos/lab7/epuck.proto: protos/epuck.proto
           temp/protos/lab7/ds.proto: protos/ds.proto
-    - name: Building workspace
-      uses: lukka/run-cmake@v10
-      with:
-        configurePreset: release
-        buildPreset: release
+    - name: Print (debug)
+      run: ls -R .
+    # - name: Building workspace
+    #   uses: lukka/run-cmake@v10
+    #   with:
+    #     configurePreset: release
+    #     buildPreset: release
         # testPreset: release
     # - name: Starting up Webots simulation...
     #   uses: ./.github/actions/run-webots
@@ -40,21 +42,18 @@ jobs:
     #   with:
     #     world: "worlds/arena.wbt"
   
-
     # - name: Stage 1
     #   id: stage-1
-    #   uses: classroom-resources/autograding-command-grader@v1
+    #   run: ./build/test_stage1
+    # - name: Stage 2
+    #   id: stage-2
+    #   run: ./build/test_stage2
+    # - name: Report test results
+    #   uses: ./.github/actions/gtest-reporter
     #   with:
-    #     test-name: Stage 1
-    #     setup-command: "./build.sh"
-    #     command: "./build/TestSuite [Stage 1]"
-    #     timeout: 10
-
-    - name: Stage 1
-      run: ./build/test_stage1
-
-    - name: Stage 2
-      run: ./build/test_stage2
+    #     target:
+    #     - stage-1
+    #     - stage-2
 
     # - name: Autograding Reporter
     #   uses: classroom-resources/autograding-grading-reporter@v1

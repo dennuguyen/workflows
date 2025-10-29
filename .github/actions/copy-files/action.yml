@@ -4,7 +4,7 @@ description: |
 author: dennuguyen
 
 inputs:
-  files:
+  mapping:
     description: |
       Multiline mapping where each non-empty line is "source: target". Paths are relative to the repository workspace. For example: path_to_file_replacing: path_to_file_to_replace
     required: true
