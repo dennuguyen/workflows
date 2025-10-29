@@ -10,9 +10,11 @@ inputs:
 runs:
   using: composite
   steps:
-  - name: Install Python dependencies
-    shell: python
-    run: python3 -m pip install -r requirements.txt
+  - name: Setting up Python environment
+    uses: actions/setup-python@v6
+    with:
+      python-version: '3.13' 
+      pip-install: clang pydantic
   - name: Discover gtest cases
     shell: python
     run: python3 discover_tests.py ${{ inputs.test_file }}
