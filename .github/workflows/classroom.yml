@@ -40,7 +40,7 @@ jobs:
     #     world: "worlds/arena.wbt"
   
     - name: Stage 1
-      uses: ./.github/actions/run-gtests
+      uses: ./.github/actions/run-gtest
       with:
         test_executable: build/test_stage1
         test_file: test_stage1.cpp
