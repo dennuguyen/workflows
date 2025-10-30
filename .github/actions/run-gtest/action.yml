@@ -26,7 +26,7 @@ runs:
       DISCOVERED_FILE=$(mktemp)
       RESULT_FILE=$(mktemp)
 
-      python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE > dev/null
-      python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > dev/null
+      python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE > /dev/null
+      python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > /dev/null
 
       echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
