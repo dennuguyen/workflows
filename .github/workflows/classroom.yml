@@ -12,14 +12,8 @@ jobs:
     services:
       gtest:
         image: docker://srzzumix/googletest:latest
-        options: >-
-          --entrypoint sleep
-        command: ["infinity"]
       webots:
         image: cyberbotics/webots:latest
-        options: >-
-          --entrypoint sleep
-        command: ["infinity"]
     steps:
     - name: Check running services
       run: |
