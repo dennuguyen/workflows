@@ -30,3 +30,4 @@ runs:
       python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > /dev/null
 
       echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
+      cat "$RESULT_FILE"
