@@ -9,50 +9,51 @@ jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
-    services:
-      gtest:
-        image: docker://srzzumix/googletest:latest
-      webots:
-        image: cyberbotics/webots:latest
+    # services:
+    #   gtest:
+    #     image: docker://srzzumix/googletest:latest
+    #   webots:
+    #     image: cyberbotics/webots:latest
     steps:
-    - name: Check running services
-      run: |
-        echo "GTest service hostname: gtest"
-        echo "Webots service hostname: webots"
-        docker ps
-
-    # - name: Creating workspace
-    #   uses: actions/checkout@v5
-    #   with:
-    #     fetch-depth: 0
-    # - name: Checking out test code
-    #   uses: actions/checkout@v5
-    #   with:
-    #     fetch-depth: 0
-    #     repository: UNSW-MTRN2500/webots-utils
-    #     path: temp
-    # - name: Copying test code into workspace
-    #   uses: ./.github/actions/copy-files
-    #   with:
-    #     mapping: |
-    #       temp/protos/lab7/epuck.proto: protos/epuck.proto
-    #       temp/protos/lab7/ds.proto: protos/ds.proto
-    # - name: Building workspace
-    #   uses: lukka/run-cmake@v10
-    #   with:
-    #     configurePreset: release
-    #     buildPreset: release
+    - name: Install gtest
+      uses: MarkusJx/googletest-installer@v1.1
+    - name: Creating workspace
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+    - name: Checking out test code
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+        repository: UNSW-MTRN2500/webots-utils
+        path: temp
+    - name: Copying test code into workspace
+      uses: ./.github/actions/copy-files
+      with:
+        mapping: |
+          temp/protos/lab7/epuck.proto: protos/epuck.proto
+          temp/protos/lab7/ds.proto: protos/ds.proto
+    - name: Building workspace
+      uses: lukka/run-cmake@v10
+      with:
+        configurePreset: release
+        buildPreset: release
     # - name: Starting up Webots simulation...
     #   uses: ./.github/actions/run-webots
     #   timeout-minutes: 1
     #   with:
     #     world: "worlds/arena.wbt"
   
-    # - name: Stage 1
-    #   uses: ./.github/actions/run-gtest
-    #   with:
-    #     test_executable: build/test_stage1
-    #     test_file: test_stage1.cpp
+    - name: Stage 1
+      uses: ./.github/actions/run-gtest
+      with:
+        test_executable: build/test_stage1
+        test_file: test_stage1.cpp
+    - name: Stage 2
+      uses: ./.github/actions/run-gtest
+      with:
+        test_executable: build/test_stage2
+        test_file: test_stage2.cpp
     # - name: Stage 2
     #   id: stage-2
     #   run: ./build/test_stage2
