@@ -19,14 +19,6 @@ outputs:
 runs:
   using: composite
   steps:
-  - name: Setting up Python environment
-    uses: actions/setup-python@v6
-    with:
-      python-version: 3.13
-      cache: pip
-  - name: Install dependencies
-    shell: bash
-    run: pip install -r ./.github/actions/run-gtest/requirements.txt
   - name: Run unit tests
     shell: bash
     run: |

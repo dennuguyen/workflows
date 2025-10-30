@@ -62,11 +62,21 @@ def run_tests(test_executable: str, tests: list[object]):
     return tests
 
 if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: run_tests.py <test_executable> <test_input> [output_file]", file=sys.stderr)
+        sys.exit(1)
+
     test_executable = sys.argv[1]
     test_input = sys.argv[2]
-    output_file = sys.argv[3]
+
     tests = json.load(open(test_input, "r"))
     result = run_tests(test_executable, tests)
-    with open(output_file, "w+") as f:
-        json.dump(result, f)
-        print(result)
+    output = json.dumps(result)
+
+    # Write JSON to output file if provided.
+    if len(sys.argv) > 3:
+        output_file = sys.argv[3]
+        with open(output_file, "w") as f:
+            f.write(output)
+
+    print(output)

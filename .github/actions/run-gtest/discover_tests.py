@@ -3,36 +3,68 @@ import re
 import sys
 
 from pathlib import Path
-from pydantic import BaseModel, field_validator
-from typing import Optional
+from typing import Optional, Dict, List, Tuple, Union, Any
 
-class TestMetadata(BaseModel):
-    name: Optional[str] = None
-    hidden: Optional[bool] = None
-    private: Optional[bool] = None
-    score: Optional[float] = None
-    min_score: Optional[float] = None
-    max_score: Optional[float] = None
-    ok: Optional[bool] = None
-    passed: Optional[bool] = None
-    feedback: Optional[str] = None
-    expected: Optional[str] = None
-    observed: Optional[str] = None
-    expand_feedback: Optional[bool] = None
+def validate_string_field(value: Any) -> Optional[str]:
+    """Validate and clean string fields"""
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return ""
+    if isinstance(value, str):
+        return value.encode("utf-8").decode("unicode_escape")
+    return str(value)
 
-    @field_validator("feedback", "expected", "observed", mode="before")
-    def fix_str_field(cls, v):
-        if isinstance(v, bool):
-            return ""
-        return v
+def validate_bool_field(value: Any) -> Optional[bool]:
+    """Validate boolean fields"""
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() in ("true", "t", "yes", "y", "1")
+    return bool(value)
 
-    @field_validator("feedback", "expected", "observed", mode="before")
-    def unicode_escape(cls, v):
-        if isinstance(v, str):
-            return v.encode("utf-8").decode("unicode_escape")
-        return v
+def validate_float_field(value: Any) -> Optional[float]:
+    """Validate float fields"""
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
 
-def extract_test_metadata(code: list[str], row: int) -> dict:
+def validate_metadata(metadata: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validate and clean metadata fields, similar to the Pydantic model validation
+    but using plain Python types and validation functions.
+    """
+    validated = {}
+    
+    # String fields
+    for field in ["name", "feedback", "expected", "observed"]:
+        if field in metadata:
+            value = validate_string_field(metadata[field])
+            if value is not None:
+                validated[field] = value
+    
+    # Boolean fields
+    for field in ["hidden", "private", "ok", "passed", "expand_feedback"]:
+        if field in metadata:
+            value = validate_bool_field(metadata[field])
+            if value is not None:
+                validated[field] = value
+    
+    # Float fields
+    for field in ["score", "min_score", "max_score"]:
+        if field in metadata:
+            value = validate_float_field(metadata[field])
+            if value is not None:
+                validated[field] = value
+    
+    return validated
+
+def extract_test_metadata(code: List[str], row: int) -> Dict[str, Any]:
     """
     Scans previous lines from the given line for testcase metadata.
     """
@@ -45,9 +77,9 @@ def extract_test_metadata(code: list[str], row: int) -> dict:
             value = m.group(2) or True
             metadata[key] = value
         row -= 1
-    return TestMetadata(**metadata).model_dump(exclude_none=True)
+    return validate_metadata(metadata)
 
-def extract_test_name(code: str) -> tuple:
+def extract_test_name(code: str) -> Tuple[Optional[str], Optional[str]]:
     """
     Gets the test suite and case names from the TEST macro.
     """
@@ -58,23 +90,36 @@ def extract_test_name(code: str) -> tuple:
         return testsuite_name, testcase_name
     return None, None
 
-def discover_testcases(test_file: str) -> list[dict]:
+def discover_testcases(test_file: str) -> List[Dict[str, Any]]:
+    """
+    Discover GTest test cases in a file and return their metadata.
+    """
     code = Path(test_file).read_text().splitlines()
     testcases = []
     for row, line in enumerate(code):
         if line.startswith("TEST"):
-            args = extract_test_name(code[row])
-            metadata = extract_test_metadata(code, row)
-            testcases.append({
-                "id": args[0] + "." + args[1],
-                **metadata,
-            })
+            suite_name, case_name = extract_test_name(code[row])
+            if suite_name and case_name:
+                metadata = extract_test_metadata(code, row)
+                testcases.append({
+                    "id": f"{suite_name}.{case_name}",
+                    **metadata
+                })
     return testcases
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: discover_tests.py <test_file> [output_file]", file=sys.stderr)
+        sys.exit(1)
+    
     test_file = sys.argv[1]
-    output_file = sys.argv[2]
     tests = discover_testcases(test_file)
-    with open(output_file, "w+") as f:
-        json.dump(tests, f)
-        print(tests)
+    output = json.dumps(tests)
+    
+    # Write JSON to output file if provided.
+    if len(sys.argv) > 2:
+        output_file = sys.argv[2]
+        with open(output_file, "w") as f:
+            f.write(output)
+
+    print(output)
