@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
     steps:
-    # - name: Install gtest
-    #   uses: MarkusJx/googletest-installer@v1.1
+    - name: Install gtest
+      uses: MarkusJx/googletest-installer@v1.1
     - name: Creating workspace
       uses: actions/checkout@v5
       with:
@@ -28,12 +28,11 @@ jobs:
         mapping: |
           temp/protos/lab7/epuck.proto: protos/epuck.proto
           temp/protos/lab7/ds.proto: protos/ds.proto
-    # - name: Building workspace
-    #   uses: lukka/run-cmake@v10
-    #   with:
-    #     configurePreset: release
-    #     buildPreset: release
-        # testPreset: release
+    - name: Building workspace
+      uses: lukka/run-cmake@v10
+      with:
+        configurePreset: release
+        buildPreset: release
     # - name: Starting up Webots simulation...
     #   uses: ./.github/actions/run-webots
     #   timeout-minutes: 1
@@ -41,8 +40,9 @@ jobs:
     #     world: "worlds/arena.wbt"
   
     - name: Stage 1
-      uses: ./.github/actions/run-gtest
+      uses: ./.github/actions/run-gtests
       with:
+        test_executable: build/test_stage1
         test_file: test_stage1.cpp
     # - name: Stage 2
     #   id: stage-2

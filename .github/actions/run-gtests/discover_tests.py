@@ -1,3 +1,4 @@
+import json
 import re
 import sys
 
@@ -65,11 +66,15 @@ def discover_testcases(test_file: str) -> list[dict]:
             args = extract_test_name(code[row])
             metadata = extract_test_metadata(code, row)
             testcases.append({
-                "test_file": test_file,
-                "test_runner": "./" + Path(test_file).stem + ".out",
                 "id": args[0] + "." + args[1],
                 **metadata,
             })
     return testcases
 
-print(discover_testcases(sys.argv[1]))
+if __name__ == "__main__":
+    test_file = sys.argv[1]
+    output_file = sys.argv[2]
+    tests = discover_testcases(test_file)
+    with open(output_file, "w+") as f:
+        json.dump(tests, f)
+        print(tests)

@@ -1,0 +1,38 @@
+name: Run Google Test cases
+author: dennuguyen
+
+inputs:
+  test_executable:
+    description: Test executable path
+    required: true
+    type: string
+  test_file:
+    description: Test file path
+    required: true
+    type: string
+
+outputs:
+  result:
+    description: Test results
+    value: ${{ steps.run-test.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+  - name: Setting up Python environment
+    uses: actions/setup-python@v6
+    with:
+      python-version: 3.13
+      cache: pip
+  - name: Install dependencies
+    shell: bash
+    run: pip install -r ./.github/actions/run-gtest/requirements.txt
+  - name: Run unit tests
+    shell: bash
+    run: |
+      DISCOVERED_FILE=$(mktemp)
+      python3 ./.github/actions/run-gtest/discover_tests.py "${{ inputs.test_file }}" "$DISCOVERED_FILE"
+      RESULT_FILE=$(mktemp)
+      python3 ./.github/actions/run-gtest/run_tests.py "${{ inputs.test_executable }}" "$DISCOVERED_FILE" "$RESULT_FILE"
+      echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
+      cat "$RESULT_FILE"
