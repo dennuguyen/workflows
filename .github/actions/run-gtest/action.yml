@@ -15,14 +15,6 @@ outputs:
 runs:
   using: composite
   steps:
-  - name: Setting up Python environment
-    uses: actions/setup-python@v6
-    with:
-      python-version: 3.13
-      cache: pip
-  - name: Install dependencies
-    shell: bash
-    run: pip install -r ./.github/actions/run-gtest/requirements.txt
   - name: Build tests
     shell: bash
     run: cmake --build build --target ${{ inputs.target }}
@@ -33,7 +25,8 @@ runs:
       TEST_EXEC="build/${{ inputs.target }}"
       DISCOVERED_FILE=$(mktemp)
       RESULT_FILE=$(mktemp)
-      python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE
-      python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE
+
+      python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE > dev/null
+      python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > dev/null
+
       echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
-      cat "$RESULT_FILE"

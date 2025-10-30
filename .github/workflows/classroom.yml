@@ -42,6 +42,14 @@ jobs:
       uses: lukka/get-cmake@latest
     - name: Create build directory
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+    - name: Setting up Python environment
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.13
+        cache: pip
+    - name: Install Python dependencies
+      shell: bash
+      run: pip install -r ./.github/actions/run-gtest/requirements.txt
     - name: Stage 1
       uses: ./.github/actions/run-gtest
       with:
@@ -49,11 +57,7 @@ jobs:
     - name: Stage 2
       uses: ./.github/actions/run-gtest
       with:
-        test_executable: build/test_stage2
-        test_file: test_stage2.cpp
-    # - name: Stage 2
-    #   id: stage-2
-    #   run: ./build/test_stage2
+        target: test_stage2
     # - name: Report test results
     #   uses: ./.github/actions/gtest-reporter
     #   with:
