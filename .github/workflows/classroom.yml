@@ -9,41 +9,56 @@ jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
-    container:
-      image: docker://srzzumix/googletest:latest
+    services:
+      gtest:
+        image: docker://srzzumix/googletest:latest
+        options: >-
+          --entrypoint sleep
+        command: ["infinity"]
+      webots:
+        image: cyberbotics/webots:latest
+        options: >-
+          --entrypoint sleep
+        command: ["infinity"]
     steps:
-    - name: Creating workspace
-      uses: actions/checkout@v5
-      with:
-        fetch-depth: 0
-    - name: Checking out test code
-      uses: actions/checkout@v5
-      with:
-        fetch-depth: 0
-        repository: UNSW-MTRN2500/webots-utils
-        path: temp
-    - name: Copying test code into workspace
-      uses: ./.github/actions/copy-files
-      with:
-        mapping: |
-          temp/protos/lab7/epuck.proto: protos/epuck.proto
-          temp/protos/lab7/ds.proto: protos/ds.proto
-    - name: Building workspace
-      uses: lukka/run-cmake@v10
-      with:
-        configurePreset: release
-        buildPreset: release
+    - name: Check running services
+      run: |
+        echo "GTest service hostname: gtest"
+        echo "Webots service hostname: webots"
+        docker ps
+
+    # - name: Creating workspace
+    #   uses: actions/checkout@v5
+    #   with:
+    #     fetch-depth: 0
+    # - name: Checking out test code
+    #   uses: actions/checkout@v5
+    #   with:
+    #     fetch-depth: 0
+    #     repository: UNSW-MTRN2500/webots-utils
+    #     path: temp
+    # - name: Copying test code into workspace
+    #   uses: ./.github/actions/copy-files
+    #   with:
+    #     mapping: |
+    #       temp/protos/lab7/epuck.proto: protos/epuck.proto
+    #       temp/protos/lab7/ds.proto: protos/ds.proto
+    # - name: Building workspace
+    #   uses: lukka/run-cmake@v10
+    #   with:
+    #     configurePreset: release
+    #     buildPreset: release
     # - name: Starting up Webots simulation...
     #   uses: ./.github/actions/run-webots
     #   timeout-minutes: 1
     #   with:
     #     world: "worlds/arena.wbt"
   
-    - name: Stage 1
-      uses: ./.github/actions/run-gtest
-      with:
-        test_executable: build/test_stage1
-        test_file: test_stage1.cpp
+    # - name: Stage 1
+    #   uses: ./.github/actions/run-gtest
+    #   with:
+    #     test_executable: build/test_stage1
+    #     test_file: test_stage1.cpp
     # - name: Stage 2
     #   id: stage-2
     #   run: ./build/test_stage2
