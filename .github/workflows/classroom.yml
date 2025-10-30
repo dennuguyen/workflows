@@ -33,20 +33,15 @@ jobs:
         mapping: |
           temp/protos/lab7/epuck.proto: protos/epuck.proto
           temp/protos/lab7/ds.proto: protos/ds.proto
-    # - name: Building workspace
-    #   uses: lukka/run-cmake@v10
-    #   with:
-    #     configurePreset: release
-    #     buildPreset: release
-
-    - uses: lukka/get-cmake@latest
-
     # - name: Starting up Webots simulation...
     #   uses: ./.github/actions/run-webots
     #   timeout-minutes: 1
     #   with:
     #     world: "worlds/arena.wbt"
-  
+    - name: Install Cmake
+      uses: lukka/get-cmake@latest
+    - name: Create build directory
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
     - name: Stage 1
       uses: ./.github/actions/run-gtest
       with:
