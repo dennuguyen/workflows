@@ -2,12 +2,8 @@ name: Run Google Test cases
 author: dennuguyen
 
 inputs:
-  test_executable:
-    description: Test executable path
-    required: true
-    type: string
-  test_file:
-    description: Test file path
+  target:
+    description: Name of test file without file extension
     required: true
     type: string
 
@@ -27,12 +23,17 @@ runs:
   - name: Install dependencies
     shell: bash
     run: pip install -r ./.github/actions/run-gtest/requirements.txt
-  - name: Run unit tests
+  - name: Build tests
+    shell: bash
+    run: cmake --build build --target ${{ inputs.target }}
+  - name: Run tests
     shell: bash
     run: |
+      TEST_FILE="${{ inputs.target }}.cpp"
+      TEST_EXEC="build/${{ inputs.target }}"
       DISCOVERED_FILE=$(mktemp)
-      python3 ./.github/actions/run-gtest/discover_tests.py "${{ inputs.test_file }}" "$DISCOVERED_FILE"
       RESULT_FILE=$(mktemp)
-      python3 ./.github/actions/run-gtest/run_tests.py "${{ inputs.test_executable }}" "$DISCOVERED_FILE" "$RESULT_FILE"
+      python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE
+      python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE
       echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
       cat "$RESULT_FILE"
