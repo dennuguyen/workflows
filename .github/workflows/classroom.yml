@@ -63,8 +63,7 @@ jobs:
     - name: Final grade
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
-        STAGE-1_RESULTS: "${{steps.stage-1.outputs.result}}"
-        STAGE-2_RESULTS: "${{steps.stage-2.outputs.result}}"
+        STAGE-1_RESULTS: ${{steps.stage-1.outputs.result}}
+        STAGE-2_RESULTS: ${{steps.stage-2.outputs.result}}
       with:
-        runners: |
-          ["stage-1", "stage-2"]
+        runners: stage-1,stage-2
