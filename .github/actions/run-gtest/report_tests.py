@@ -65,10 +65,11 @@ if __name__ == "__main__":
 
     results = json.load(open(result_file, "r"))
     report = report_tests(results)
+    output = json.dumps(report)
 
     if len(sys.argv) > 2:
         output_file = sys.argv[2]
         with open(output_file, "w") as f:
-            f.write(report)
+            f.write(output)
 
-    print(report)
+    print(output)
