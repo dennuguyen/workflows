@@ -66,4 +66,4 @@ jobs:
         STAGE-1_RESULTS: "${{steps.stage-1.outputs.result}}"
         STAGE-2_RESULTS: "${{steps.stage-2.outputs.result}}"
       with:
-        runners: stage-1
+        runners: ["stage-1", "stage-2"]
