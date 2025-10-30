@@ -3,34 +3,9 @@ import re
 import sys
 
 from pathlib import Path
-from pydantic import BaseModel, field_validator
 from typing import Optional, Dict, List, Tuple, Any
 
-class TestMetadata(BaseModel):
-    name: Optional[str] = None
-    hidden: Optional[bool] = None
-    private: Optional[bool] = None
-    score: Optional[float] = None
-    min_score: Optional[float] = None
-    max_score: Optional[float] = None
-    ok: Optional[bool] = None
-    passed: Optional[bool] = None
-    feedback: Optional[str] = None
-    expected: Optional[str] = None
-    observed: Optional[str] = None
-    expand_feedback: Optional[bool] = None
-
-    @field_validator("feedback", "expected", "observed", mode="before")
-    def fix_str_field(cls, v):
-        if isinstance(v, bool):
-            return ""
-        return v
-
-    @field_validator("feedback", "expected", "observed", mode="before")
-    def unicode_escape(cls, v):
-        if isinstance(v, str):
-            return v.encode("utf-8").decode("unicode_escape")
-        return v
+from test_metadata import TestMetadata
 
 def extract_test_metadata(code: List[str], row: int) -> Dict[str, Any]:
     """

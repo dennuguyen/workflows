@@ -12,4 +12,6 @@ TEST(HelloWorldTest, BasicAssertions) {
 
 TEST(GoodbyeTest, BasicAssertions) {
     EXPECT_EQ("Goodbye World!", "Goodbye World!");
+    RecordProperty("observed", "Goodbye World!");
+    RecordProperty("expected", "Goodbye World!");
 }

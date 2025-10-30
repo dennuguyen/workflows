@@ -17,17 +17,17 @@ jobs:
     steps:
     - name: Install gtest
       uses: MarkusJx/googletest-installer@v1.1
-    - name: Creating workspace
+    - name: Create workspace
       uses: actions/checkout@v5
       with:
         fetch-depth: 0
-    - name: Checking out test code
+    - name: Checkout test code
       uses: actions/checkout@v5
       with:
         fetch-depth: 0
         repository: UNSW-MTRN2500/webots-utils
         path: temp
-    - name: Copying test code into workspace
+    - name: Copy test code into workspace
       uses: ./.github/actions/copy-files
       with:
         mapping: |
@@ -42,7 +42,7 @@ jobs:
       uses: lukka/get-cmake@latest
     - name: Create build directory
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-    - name: Setting up Python environment
+    - name: Setup Python environment
       uses: actions/setup-python@v6
       with:
         python-version: 3.13
@@ -50,25 +50,18 @@ jobs:
     - name: Install Python dependencies
       shell: bash
       run: pip install -r ./.github/actions/run-gtest/requirements.txt
-    - name: Stage 1
+    - name: Test Stage 1
       uses: ./.github/actions/run-gtest
       with:
         target: test_stage1
-    - name: Stage 2
+    - name: Test Stage 2
       uses: ./.github/actions/run-gtest
       with:
         target: test_stage2
-    # - name: Report test results
-    #   uses: ./.github/actions/gtest-reporter
-    #   with:
-    #     target:
-    #     - stage-1
-    #     - stage-2
-
-    # - name: Autograding Reporter
-    #   uses: classroom-resources/autograding-grading-reporter@v1
-    #   env:
-    #     COMPILATION_RESULTS: "${{steps.compilation.outputs.result}}"
-    #     STAGE-1_RESULTS: "${{steps.stage-1.outputs.result}}"
-    #   with:
-    #     runners: compilation,stage-1
+    - name: Final grade
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        STAGE-1_RESULTS: "${{steps.stage-1.outputs.result}}"
+        STAGE-2_RESULTS: "${{steps.stage-2.outputs.result}}"
+      with:
+        runners: stage-1,stage-2

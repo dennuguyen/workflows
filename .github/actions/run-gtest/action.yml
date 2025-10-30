@@ -10,7 +10,7 @@ inputs:
 outputs:
   result:
     description: Test results
-    value: ${{ steps.run-test.outputs.result }}
+    value: ${{ steps.run-tests.outputs.result }}
 
 runs:
   using: composite
@@ -19,15 +19,17 @@ runs:
     shell: bash
     run: cmake --build build --target ${{ inputs.target }}
   - name: Run tests
+    id: run-tests
     shell: bash
     run: |
       TEST_FILE="${{ inputs.target }}.cpp"
       TEST_EXEC="build/${{ inputs.target }}"
       DISCOVERED_FILE=$(mktemp)
-      RESULT_FILE=$(mktemp)
+      RESULT_FILE="${{ inputs.target }}.result.json"
+      REPORT_FILE="${{ inputs.target }}.report.json"
 
       python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE > /dev/null
       python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > /dev/null
+      python3 ./.github/actions/run-gtest/report_tests.py $RESULT_FILE $REPORT_FILE > /dev/null
 
-      echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
-      cat "$RESULT_FILE"
+      echo "result=$REPORT_FILE" >> $GITHUB_OUTPUT
