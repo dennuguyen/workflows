@@ -9,9 +9,9 @@ jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
+    container:
+      image: docker://srzzumix/googletest:latest
     steps:
-    - name: Install gtest
-      uses: MarkusJx/googletest-installer@v1.1
     - name: Creating workspace
       uses: actions/checkout@v5
       with:
