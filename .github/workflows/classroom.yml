@@ -51,10 +51,12 @@ jobs:
       shell: bash
       run: pip install -r ./.github/actions/run-gtest/requirements.txt
     - name: Test Stage 1
+      id: stage-1
       uses: ./.github/actions/run-gtest
       with:
         target: test_stage1
     - name: Test Stage 2
+      id: stage-2
       uses: ./.github/actions/run-gtest
       with:
         target: test_stage2
