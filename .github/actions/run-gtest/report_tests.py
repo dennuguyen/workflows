@@ -54,7 +54,7 @@ def report_tests(results: str):
         reports.append(Report(name=name, status=status, message=message))
 
     final = FinalReport(tests=reports, max_score=total_max)
-    return final.model_dump(exclude_none=True)
+    return final.model_dump_json(exclude_none=True)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
