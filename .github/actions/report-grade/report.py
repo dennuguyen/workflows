@@ -1,4 +1,6 @@
 from actions_toolkit import core
 
-core.notice("Hello from reporter")
-core.info("Information here")
+results = core.get_multiline_input("results")
+
+for result in results:
+    core.info(str(result))

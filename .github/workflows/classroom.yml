@@ -69,8 +69,7 @@ jobs:
         target: test_stage2
     - name: Final grade
       uses: ./.github/actions/report-grade
-      env:
-        STAGE-1_RESULTS: "${{steps.stage-1.outputs.result}}"
-        STAGE-2_RESULTS: "${{steps.stage-2.outputs.result}}"
       with:
-        runners: stage-1,stage-2
+        results: |
+          "${{steps.stage-1.outputs.result}}"
+          "${{steps.stage-2.outputs.result}}"

@@ -1,15 +1,16 @@
 name: Report grade
+description: Reports test results to GitHub Classroom
 author: dennuguyen
 
 inputs:
-  result:
-    description: Name of test results file
+  results:
+    description: Name of test results file(s)
     required: true
-    type: string
+    type: string[]
 
 runs:
   using: composite
   steps:
   - name: Report grade
     shell: bash
-    run: python3 ./.github/actions/report-grade/report.py ${{ inputs.result }} > /dev/null
+    run: python3 ./.github/actions/report-grade/report.py ${{ inputs.results }}
