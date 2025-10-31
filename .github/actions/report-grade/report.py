@@ -45,9 +45,10 @@ def print_test_case(test: json, i: int) -> bool:
         print(colour_text(CLR_GREEN, f"✅ {name} ({score}/{max_score})"))
         return True
     else:
-        print(colour_text(CLR_RED, f"❌ {name} ({score}/{max_score})"))
+        print(colour_text(CLR_RED, f"❌ {name} ({score}/{max_score})::group::"))
         print(f"Feedback: {feedback}")
         print(colour_diff(expected, observed))
+        print("::endgroup::")
         return False
 
 def print_test_suite(tests: json):
