@@ -74,12 +74,11 @@ if __name__ == "__main__":
         print("Usage: report.py <result_files>", file=sys.stderr)
         sys.exit(1)
 
-    results = core.get_multiline_input(sys.argv[1])
-
     grand_total_passed = 0
     grand_total_tests = 0
 
-    for result in results:
+    for i in range(1, len(sys.argv) - 1):
+        result = sys.argv[i]
         with open(result, "r") as f:
             tests = json.load(f)
             total_passed, total_tests = print_test_suite(tests)
