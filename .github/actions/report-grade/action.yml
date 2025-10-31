@@ -13,4 +13,4 @@ runs:
   steps:
   - name: Report grade
     shell: bash
-    run: python3 ./.github/actions/report-grade/report.py ${{ inputs.results }}
+    run: python3 ./.github/actions/report-grade/report.py ${{ join(inputs.results, ' ') }}
