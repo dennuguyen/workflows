@@ -30,22 +30,14 @@ def print_test_case(test: json, i: int) -> bool:
     expected = test.get("expected")
     observed = test.get("observed")
 
-    line = "{style}{icon} {name} {point}{reset}"
+    line = "{style}{icon} {name}{point}{reset}"
     show_feedback = None
     format = {"style": "", "icon": "", "name": "", "point": "", "reset": Style.reset}
 
     if secret:
         return passed
 
-    if hidden:
-        format["name"] = "(hidden test)"
-    else:
-        format["name"] = name
-        if score:
-            format["points"] = f"({score} points)"
-
     if passed:
-        score = 1
         format["style"] = f"{Fore.green}{Style.bold}"
         format["icon"] = "✅"
     else:
@@ -59,14 +51,19 @@ def print_test_case(test: json, i: int) -> bool:
                 print_diff(expected, observed),
                 core.end_group()
             )
+
+    if hidden:
+        format["name"] = "(hidden test)"
+    else:
+        format["name"] = name
+        if score:
+            format["points"] = f" ({score} points)"
+
     line = line.format(**format)
     print(line)
     if show_feedback:
         show_feedback(feedback, expected, observed)
-    print("""\t::group::Nested
-\tStuff
-\t::endgroup::
-""")
+
     return passed
 
 def print_test_suite(tests: json):
