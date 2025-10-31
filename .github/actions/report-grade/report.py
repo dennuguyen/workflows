@@ -1,3 +1,4 @@
+import difflib
 import json
 import sys
 
@@ -10,8 +11,20 @@ CLR_GREEN = "\x1b[32m"
 CLR_YELLOW = "\x1b[33m"
 CLR_BLUE = "\x1b[34m"
 
-def color_text(text: str, color: str) -> str:
+def color_text(color: str, text: str) -> str:
     return f"{color}{text}{CLR_RESET}"
+
+def print_diff(text1: str, text2: str) -> str:
+    diff = difflib.ndiff(text1.splitlines(), text2.splitlines())
+    colored_output = []
+    for line in diff:
+        if line.startswith('+'):
+            colored_output.append(color_text(CLR_GREEN, line))
+        elif line.startswith('-'):
+            colored_output.append(color_text(CLR_RED, line))
+        else:
+            colored_output.append(line)
+    return "\n".join(colored_output)
 
 def print_test_case(test: json, i: int) -> bool:
     name = test.get("name")
@@ -29,16 +42,13 @@ def print_test_case(test: json, i: int) -> bool:
 
     
     if passed:
-        print(f"{CLR_GREEN}✅ {name} ({score}/{max_score}){CLR_RESET}")
+        print(color_text(CLR_GREEN, f"✅ {name} ({score}/{max_score})"))
         return True
     else:
-        print(f"{CLR_RED}❌ {name} ({score}/{max_score}){CLR_RESET}")
-        print(f"\tFeedback: {feedback}")
-        print(f"\tExpected: {expected}")
-        print(f"\tObserved: {observed}")
+        print(color_text(CLR_RED, f"❌ {name} ({score}/{max_score})"))
+        print(f"Feedback: {feedback}")
+        print_diff(expected, observed)
         return False
-
-    # Feedback + expected + observed
 
 def print_test_suite(tests: json):
     total_passed = 0
