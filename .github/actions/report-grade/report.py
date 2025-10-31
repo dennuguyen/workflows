@@ -7,3 +7,4 @@ results = core.get_multiline_input("results")
 for result in results:
     with open(result, "r") as f:
         core.notice(json.dumps(f))
+        print(json.dumps(f))
