@@ -1,9 +1,13 @@
 import json
-import os
+import sys
 
 from actions_toolkit import core
 
-results = os.getenv("INPUT_RESULTS", "")
+if len(sys.argv) < 2:
+    print("Usage: report.py <result_files>", file=sys.stderr)
+    sys.exit(1)
+
+results = sys.argv[1]
 results = [r.strip() for r in results.split(",")]
 
 print("DEBUGGING", results)
