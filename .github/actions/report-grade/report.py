@@ -41,19 +41,22 @@ def print_test_case(test: json, i: int) -> bool:
     # Feedback + expected + observed
 
 def print_test_suite(tests: json):
+    total_passed = 0
+    total_tests = 0
     for i, test in enumerate(tests, start=1):
         total_tests += 1
         passed = print_test_case(test, i)
         if passed:
             total_passed += 1
+    return total_passed, total_tests
 
-def print_grand_test_summary(passed: int, tests: int):
-    print(color_text("\nSummary:", CLR_YELLOW))
-    print(f"  Total tests: {total_tests}")
-    print(f"  Passed: {total_passed}")
-    percent = (total_passed / total_tests * 100) if total_tests > 0 else 0.0
-    print(f"  Percentage: {percent:.2f}%")
-    core.set_output("points", f"{percent:.2f}")
+# def print_grand_test_summary(passed: int, tests: int):
+#     print(color_text("\nSummary:", CLR_YELLOW))
+#     print(f"  Total tests: {total_tests}")
+#     print(f"  Passed: {total_passed}")
+#     percent = (total_passed / total_tests * 100) if total_tests > 0 else 0.0
+#     print(f"  Percentage: {percent:.2f}%")
+#     core.set_output("points", f"{percent:.2f}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
