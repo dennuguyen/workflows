@@ -3,17 +3,74 @@ import sys
 
 from actions_toolkit import core
 
-if len(sys.argv) < 2:
-    print("Usage: report.py <result_files>", file=sys.stderr)
-    sys.exit(1)
+# Colour codes.
+CLR_RESET = "\x1b[0m"
+CLR_RED = "\x1b[31m"
+CLR_GREEN = "\x1b[32m"
+CLR_YELLOW = "\x1b[33m"
+CLR_BLUE = "\x1b[34m"
 
-results = sys.argv[1]
-results = [r.strip() for r in results.split(",")]
+def color_text(text: str, color: str) -> str:
+    return f"{color}{text}{CLR_RESET}"
 
-print("DEBUGGING", results)
+def print_test_case(test: json, i: int) -> bool:
+    name = test.get("name")
+    hidden = test.get("hidden")
+    secret = test.get("secret")
+    score = test.get("score")
+    min_score = test.get("min_score")
+    max_score = test.get("max_score")
+    ok = test.get("ok")
+    passed = test.get("passed")
+    feedback = test.get("feedback")
+    expected = test.get("expected")
+    observed = test.get("observed")
+    expand_feedback = test.get("expand_feedback")
 
-for result in results:
-    with open(result, "r") as f:
-        res = json.load(f)
-        print(res)
-        core.notice(res)
+    
+    if passed:
+        print(f"{CLR_GREEN}✅ {name} ({score}/{max_score}){CLR_RESET}")
+        return True
+    else:
+        print(f"{CLR_RED}❌ {name} ({score}/{max_score}){CLR_RESET}")
+        print(f"\tFeedback: {feedback}")
+        print(f"\Exected: {expected}")
+        print(f"\Observed: {observed}")
+        return False
+
+    # Feedback + expected + observed
+
+def print_test_suite(tests: json):
+    for i, test in enumerate(tests, start=1):
+        total_tests += 1
+        passed = print_test_case(test, i)
+        if passed:
+            total_passed += 1
+
+def print_grand_test_summary(passed: int, tests: int):
+    print(color_text("\nSummary:", CLR_YELLOW))
+    print(f"  Total tests: {total_tests}")
+    print(f"  Passed: {total_passed}")
+    percent = (total_passed / total_tests * 100) if total_tests > 0 else 0.0
+    print(f"  Percentage: {percent:.2f}%")
+    core.set_output("points", f"{percent:.2f}")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: report.py <result_files>", file=sys.stderr)
+        sys.exit(1)
+
+    results = sys.argv[1]
+    results = [r.strip() for r in results.split(",")]
+
+    grand_total_passed = 0
+    grand_total_tests = 0
+
+    for result in results:
+        with open(result, "r") as f:
+            tests = json.load(f)
+            total_passed, total_tests = print_test_suite(tests)
+            grand_total_passed += total_passed
+            grand_total_tests += total_tests
+
+    # print_grand_test_summary(grand_total_passed, grand_total_tests)
