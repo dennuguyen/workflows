@@ -1,2 +1,2 @@
 actions-toolkit
-colorama
+colored

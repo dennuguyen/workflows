@@ -1,21 +1,22 @@
 import difflib
 import json
+import shutil
 import sys
 
 from actions_toolkit import core
-from colorama import Fore, Back, Style
+from colored import Fore, Back, Style
 
-def diff(text1: str, text2: str) -> str:
+
+
+def print_diff(text1: str, text2: str) -> str:
     diff = difflib.ndiff(text1.splitlines(), text2.splitlines())
-    colored_output = []
     for line in diff:
-        if line.startswith('+'):
-            colored_output.append(f"{Back.GREEN}{line}{Style.RESET_ALL}")
-        elif line.startswith('-'):
-            colored_output.append(f"{Back.RED}{line}{Style.RESET_ALL}")
+        if line.startswith("+"):
+            print(f"{Back.green_4}{line:<80}{Style.reset}")
+        elif line.startswith("-"):
+            print(f"{Back.dark_red_1}{line:<80}{Style.reset}")
         else:
-            colored_output.append(line)
-    return "\n".join(colored_output)
+            print(line)
 
 def print_test_case(test: json, i: int) -> bool:
     name = test.get("name")
@@ -31,15 +32,20 @@ def print_test_case(test: json, i: int) -> bool:
     observed = test.get("observed")
     expand_feedback = test.get("expand_feedback")
 
+    points = "" if score is None else f"({score} points)"
+    line = "{:<0} {:<0} {}".format("✅" if passed else "❌", name, points)
+
     if passed:
-        print(f"{Fore.GREEN}✅ {name} ({score}/{max_score}){Style.RESET_ALL}")
+        score = 1
+        print(f"{Fore.green}{Style.bold}{line}{Style.reset}")
         return True
     else:
-        print(f"{Fore.RED}❌ {name} ({score}/{max_score}){Style.RESET_ALL}")
+        print(f"{Fore.red}{Style.bold}{line}{Style.reset}")
         core.start_group("Feedback")
-        print(f"{feedback}")
+        if feedback:
+            print(f"{feedback}")
         print(f"Difference was:")
-        print(diff(expected, observed))
+        print_diff(expected, observed)
         core.end_group()
         return False
 
