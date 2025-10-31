@@ -45,7 +45,7 @@ def print_test_case(test: json, i: int) -> bool:
         print(colour_text(CLR_GREEN, f"✅ {name} ({score}/{max_score})"))
         return True
     else:
-        core.start_group(colour_text(CLR_RED, f"::group::❌ {name} ({score}/{max_score})"))
+        core.start_group(colour_text(CLR_RED, f"❌ {name} ({score}/{max_score})"))
         print(f"Feedback: {feedback}")
         print(colour_diff(expected, observed))
         core.end_group()
@@ -74,8 +74,7 @@ if __name__ == "__main__":
         print("Usage: report.py <result_files>", file=sys.stderr)
         sys.exit(1)
 
-    results = sys.argv[1]
-    results = [r.strip() for r in results.split(",")]
+    results = core.get_multiline_input(sys.argv[1])
 
     grand_total_passed = 0
     grand_total_tests = 0
