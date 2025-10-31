@@ -4,7 +4,7 @@ author: dennuguyen
 
 inputs:
   results:
-    description: Multi-line string of test results file(s)
+    description: Comma-separated string of test results file(s)
     required: true
     type: string
 
@@ -14,4 +14,4 @@ runs:
   - name: Report grade
     shell: bash
     run: |
-      python3 ./.github/actions/report-grade/report.py "${{ inputs.results }}"
+      python3 ./.github/actions/report-grade/report.py ${{ inputs.results }}
