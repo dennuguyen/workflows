@@ -2,7 +2,7 @@ import json
 
 from actions_toolkit import core
 
-results = core.get_multiline_input("results")
+results = core.get_input("results")
 
 print("DEBUGGING", results)
 
