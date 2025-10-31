@@ -11,17 +11,17 @@ CLR_GREEN = "\x1b[32m"
 CLR_YELLOW = "\x1b[33m"
 CLR_BLUE = "\x1b[34m"
 
-def color_text(color: str, text: str) -> str:
+def colour_text(color: str, text: str) -> str:
     return f"{color}{text}{CLR_RESET}"
 
-def print_diff(text1: str, text2: str) -> str:
+def colour_diff(text1: str, text2: str) -> str:
     diff = difflib.ndiff(text1.splitlines(), text2.splitlines())
     colored_output = []
     for line in diff:
         if line.startswith('+'):
-            colored_output.append(color_text(CLR_GREEN, line))
+            colored_output.append(colour_text(CLR_GREEN, line))
         elif line.startswith('-'):
-            colored_output.append(color_text(CLR_RED, line))
+            colored_output.append(colour_text(CLR_RED, line))
         else:
             colored_output.append(line)
     return "\n".join(colored_output)
@@ -42,12 +42,12 @@ def print_test_case(test: json, i: int) -> bool:
 
     
     if passed:
-        print(color_text(CLR_GREEN, f"✅ {name} ({score}/{max_score})"))
+        print(colour_text(CLR_GREEN, f"✅ {name} ({score}/{max_score})"))
         return True
     else:
-        print(color_text(CLR_RED, f"❌ {name} ({score}/{max_score})"))
+        print(colour_text(CLR_RED, f"❌ {name} ({score}/{max_score})"))
         print(f"Feedback: {feedback}")
-        print_diff(expected, observed)
+        print(colour_diff(expected, observed))
         return False
 
 def print_test_suite(tests: json):
@@ -61,7 +61,7 @@ def print_test_suite(tests: json):
     return total_passed, total_tests
 
 # def print_grand_test_summary(passed: int, tests: int):
-#     print(color_text("\nSummary:", CLR_YELLOW))
+#     print(colour_text("\nSummary:", CLR_YELLOW))
 #     print(f"  Total tests: {total_tests}")
 #     print(f"  Passed: {total_passed}")
 #     percent = (total_passed / total_tests * 100) if total_tests > 0 else 0.0
