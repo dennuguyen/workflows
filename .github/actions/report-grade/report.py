@@ -3,16 +3,16 @@ import json
 import sys
 
 from actions_toolkit import core
-from colored import Fore, Back, Style
+from colorama import Fore, Back, Style
 
 def diff(text1: str, text2: str) -> str:
     diff = difflib.ndiff(text1.splitlines(), text2.splitlines())
     colored_output = []
     for line in diff:
         if line.startswith('+'):
-            colored_output.append(f"{Fore.green}{Back.green}{line}{Style.reset}")
+            colored_output.append(f"{Fore.GREEN}{Back.LIGHTGREEN_EX}{line}{Style.RESET_ALL}")
         elif line.startswith('-'):
-            colored_output.append(f"{Fore.red}{Back.red}{line}{Style.reset}")
+            colored_output.append(f"{Fore.RED}{Back.LIGHTRED_EX}{line}{Style.RESET_ALL}")
         else:
             colored_output.append(line)
     return "\n".join(colored_output)
@@ -32,10 +32,10 @@ def print_test_case(test: json, i: int) -> bool:
     expand_feedback = test.get("expand_feedback")
 
     if passed:
-        print(f"{Fore.green}  ✅ {name} ({score}/{max_score}){Style.reset}")
+        print(f"{Fore.GREEN}✅ {name} ({score}/{max_score}){Style.RESET_ALL}")
         return True
     else:
-        print(f"{Back.red}❌ {name} ({score}/{max_score}){Style.reset}")
+        print(f"{Fore.RED}❌ {name} ({score}/{max_score}){Style.RESET_ALL}")
         core.start_group("Feedback")
         print(f"{feedback}")
         print(f"Difference was:")
