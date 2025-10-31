@@ -5,6 +5,11 @@ on:
     branches:
       main
 
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
 jobs:
   run-autograding-tests:
     runs-on: ubuntu-latest
@@ -49,7 +54,9 @@ jobs:
         cache: pip
     - name: Install Python dependencies
       shell: bash
-      run: pip install -r ./.github/actions/run-gtest/requirements.txt
+      run: |
+        pip install -r ./.github/actions/run-gtest/requirements.txt
+        pip install -r ./.github/actions/report-grade/requirements.txt
     - name: Test Stage 1
       id: stage-1
       uses: ./.github/actions/run-gtest
@@ -61,7 +68,7 @@ jobs:
       with:
         target: test_stage2
     - name: Final grade
-      uses: classroom-resources/autograding-grading-reporter@v1
+      uses: ./.github/actions/report-grade
       env:
         STAGE-1_RESULTS: "${{steps.stage-1.outputs.result}}"
         STAGE-2_RESULTS: "${{steps.stage-2.outputs.result}}"

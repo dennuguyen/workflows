@@ -30,6 +30,5 @@ runs:
 
       python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE > /dev/null
       python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > /dev/null
-      python3 ./.github/actions/run-gtest/report_tests.py $RESULT_FILE $REPORT_FILE > /dev/null
 
-      echo "result=$(cat $REPORT_FILE)" >> $GITHUB_OUTPUT
+      echo "result=$(cat $RESULT_FILE)" >> $GITHUB_OUTPUT
