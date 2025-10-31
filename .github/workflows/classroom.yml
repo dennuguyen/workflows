@@ -71,5 +71,5 @@ jobs:
       uses: ./.github/actions/report-grade
       with:
         results: |
-          "${{steps.stage-1.outputs.result}}"
-          "${{steps.stage-2.outputs.result}}"
+          ${{steps.stage-1.outputs.result}}
+          ${{steps.stage-2.outputs.result}}
