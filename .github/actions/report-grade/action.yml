@@ -4,7 +4,7 @@ author: dennuguyen
 
 inputs:
   results:
-    description: Name of test results file(s)
+    description: Test results file(s)
     required: true
     type: string[]
 

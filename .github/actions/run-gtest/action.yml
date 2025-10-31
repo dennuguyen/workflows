@@ -9,7 +9,7 @@ inputs:
 
 outputs:
   result:
-    description: Test results
+    description: Test result file
     value: ${{ steps.run-tests.outputs.result }}
 
 runs:
@@ -31,4 +31,4 @@ runs:
       python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE > /dev/null
       python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > /dev/null
 
-      echo "result=$(cat $RESULT_FILE)" >> $GITHUB_OUTPUT
+      echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
