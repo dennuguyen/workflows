@@ -3,25 +3,16 @@ import json
 import sys
 
 from actions_toolkit import core
+from colored import Fore, Back, Style
 
-# Colour codes.
-CLR_RESET = "\x1b[0m"
-CLR_RED = "\x1b[31m"
-CLR_GREEN = "\x1b[32m"
-CLR_YELLOW = "\x1b[33m"
-CLR_BLUE = "\x1b[34m"
-
-def colour_text(color: str, text: str) -> str:
-    return f"{color}{text}{CLR_RESET}"
-
-def colour_diff(text1: str, text2: str) -> str:
+def diff(text1: str, text2: str) -> str:
     diff = difflib.ndiff(text1.splitlines(), text2.splitlines())
     colored_output = []
     for line in diff:
         if line.startswith('+'):
-            colored_output.append(colour_text(CLR_GREEN, line))
+            colored_output.append(f"{Fore.green}{Back.green}{line}{Style.reset}")
         elif line.startswith('-'):
-            colored_output.append(colour_text(CLR_RED, line))
+            colored_output.append(f"{Fore.red}{Back.red}{line}{Style.reset}")
         else:
             colored_output.append(line)
     return "\n".join(colored_output)
@@ -40,16 +31,15 @@ def print_test_case(test: json, i: int) -> bool:
     observed = test.get("observed")
     expand_feedback = test.get("expand_feedback")
 
-    
     if passed:
-        print(colour_text(CLR_GREEN, f"  ✅ {name} ({score}/{max_score})"))
+        print(f"{Fore.green}  ✅ {name} ({score}/{max_score}){Style.reset}")
         return True
     else:
-        colour_text(CLR_RED, f"❌ {name} ({score}/{max_score})")
+        print(f"{Back.red}❌ {name} ({score}/{max_score}){Style.reset}")
         core.start_group("Feedback")
         print(f"{feedback}")
         print(f"Difference was:")
-        print(colour_diff(expected, observed))
+        print(diff(expected, observed))
         core.end_group()
         return False
 
