@@ -1,3 +1,7 @@
 #include "gtest/gtest.h"
 
-TEST(ThisShouldFail, TestCase) { EXPECT_EQ("ada", "failed"); }
+//@expected ada
+TEST(ThisShouldFail, TestCase) {
+    RecordProperty("observed", "failed");
+    EXPECT_EQ("ada", "failed");
+}

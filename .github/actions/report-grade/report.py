@@ -34,8 +34,8 @@ def print_test_case(test: json, i: int) -> bool:
     else:
         print(f"{CLR_RED}❌ {name} ({score}/{max_score}){CLR_RESET}")
         print(f"\tFeedback: {feedback}")
-        print(f"\Exected: {expected}")
-        print(f"\Observed: {observed}")
+        print(f"\tExpected: {expected}")
+        print(f"\tObserved: {observed}")
         return False
 
     # Feedback + expected + observed
