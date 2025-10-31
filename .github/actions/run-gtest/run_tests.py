@@ -73,10 +73,10 @@ if __name__ == "__main__":
     result = run_tests(test_executable, tests)
     output = json.dumps(result)
 
+    # TODO: Add test suite metadata.
+
     # Write JSON to output file if provided.
     if len(sys.argv) > 3:
         output_file = sys.argv[3]
         with open(output_file, "w") as f:
             f.write(output)
-
-    print(output)
