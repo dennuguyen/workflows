@@ -42,11 +42,13 @@ def print_test_case(test: json, i: int) -> bool:
 
     
     if passed:
-        print(colour_text(CLR_GREEN, f"✅ {name} ({score}/{max_score})"))
+        print(colour_text(CLR_GREEN, f"  ✅ {name} ({score}/{max_score})"))
         return True
     else:
-        core.start_group(colour_text(CLR_RED, f"❌ {name} ({score}/{max_score})"))
-        print(f"Feedback: {feedback}")
+        colour_text(CLR_RED, f"❌ {name} ({score}/{max_score})")
+        core.start_group("Feedback")
+        print(f"{feedback}")
+        print(f"Difference was:")
         print(colour_diff(expected, observed))
         core.end_group()
         return False
