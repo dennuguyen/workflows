@@ -14,4 +14,4 @@ runs:
   - name: Report grade
     shell: bash
     run: |
-      python3 ./.github/actions/report-grade/report.py ${{ inputs.results }}
+      python3 ./.github/actions/report-grade/report.py "${{ inputs.results }}"
