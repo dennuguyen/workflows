@@ -70,6 +70,6 @@ jobs:
     - name: Final grade
       uses: ./.github/actions/report-grade
       with:
-        results:
-        - "${{steps.stage-1.outputs.result}}"
-        - "${{steps.stage-2.outputs.result}}"
+        results: |
+          "${{steps.stage-1.outputs.result}}"
+          "${{steps.stage-2.outputs.result}}"

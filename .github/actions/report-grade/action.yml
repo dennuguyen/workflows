@@ -4,13 +4,16 @@ author: dennuguyen
 
 inputs:
   results:
-    description: Test results file(s)
+    description: Multi-line string of test results file(s)
     required: true
-    type: string[]
+    type: string
 
 runs:
   using: composite
   steps:
   - name: Report grade
     shell: bash
-    run: python3 ./.github/actions/report-grade/report.py ${{ inputs.results }}
+    run: |
+      python3 ./.github/actions/report-grade/report.py <<'EOF'
+      ${{ inputs.results }}
+      EOF
