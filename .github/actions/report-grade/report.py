@@ -6,15 +6,14 @@ import sys
 from actions_toolkit import core
 from colored import Fore, Back, Style
 
-
-
 def print_diff(text1: str, text2: str) -> str:
+    columns = shutil.get_terminal_size().columns
     diff = difflib.ndiff(text1.splitlines(), text2.splitlines())
     for line in diff:
         if line.startswith("+"):
-            print(f"{Back.green_4}{line:<80}{Style.reset}")
+            print(f"{Back.green_4}{line:<{columns}}{Style.reset}")
         elif line.startswith("-"):
-            print(f"{Back.dark_red_1}{line:<80}{Style.reset}")
+            print(f"{Back.dark_red_1}{line:<{columns}}{Style.reset}")
         else:
             print(line)
 
@@ -30,17 +29,22 @@ def print_test_case(test: json, i: int) -> bool:
     feedback = test.get("feedback")
     expected = test.get("expected")
     observed = test.get("observed")
-    expand_feedback = test.get("expand_feedback")
 
-    points = "" if score is None else f"({score} points)"
-    line = "{:<0} {:<0} {}".format("✅" if passed else "❌", name, points)
+    points = ""
+
+    if score:
+        points = f"({score} points)"
+
+    if hidden or secret:
+        name = "(hidden test)"
+        points = ""
 
     if passed:
         score = 1
-        print(f"{Fore.green}{Style.bold}{line}{Style.reset}")
+        print(f"{Fore.green}{Style.bold}✅ {name} {points}{Style.reset}")
         return True
     else:
-        print(f"{Fore.red}{Style.bold}{line}{Style.reset}")
+        print(f"{Fore.red}{Style.bold}❌ {name} {points}{Style.reset}")
         core.start_group("Feedback")
         if feedback:
             print(f"{feedback}")
