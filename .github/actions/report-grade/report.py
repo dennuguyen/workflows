@@ -30,28 +30,44 @@ def print_test_case(test: json, i: int) -> bool:
     expected = test.get("expected")
     observed = test.get("observed")
 
-    points = ""
+    line = "{style}{icon} {name} {point}{reset}"
+    show_feedback = None
+    format = {"style": "", "icon": "", "name": "", "point": "", "reset": Style.reset}
 
-    if score:
-        points = f"({score} points)"
+    if secret:
+        return passed
 
-    if hidden or secret:
-        name = "(hidden test)"
-        points = ""
+    if hidden:
+        format["name"] = "(hidden test)"
+    else:
+        format["name"] = name
+        if score:
+            format["points"] = f"({score} points)"
 
     if passed:
         score = 1
-        print(f"{Fore.green}{Style.bold}✅ {name} {points}{Style.reset}")
-        return True
+        format["style"] = f"{Fore.green}{Style.bold}"
+        format["icon"] = "✅"
     else:
-        print(f"{Fore.red}{Style.bold}❌ {name} {points}{Style.reset}")
-        core.start_group("Feedback")
-        if feedback:
-            print(f"{feedback}")
-        print(f"Difference was:")
-        print_diff(expected, observed)
-        core.end_group()
-        return False
+        format["style"] = f"{Fore.red}{Style.bold}"
+        format["icon"] = "❌"
+        if not hidden:
+            show_feedback = lambda feedback, expected, observed: (
+                core.start_group("Feedback"),
+                print(feedback) if feedback else None,
+                print("Difference was:"),
+                print_diff(expected, observed),
+                core.end_group()
+            )
+    line = line.format(**format)
+    print(line)
+    if show_feedback:
+        show_feedback(feedback, expected, observed)
+    print("""\t::group::Nested
+\tStuff
+\t::endgroup::
+""")
+    return passed
 
 def print_test_suite(tests: json):
     total_passed = 0
