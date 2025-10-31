@@ -77,7 +77,7 @@ if __name__ == "__main__":
     grand_total_passed = 0
     grand_total_tests = 0
 
-    for i in range(1, len(sys.argv) - 1):
+    for i in range(1, len(sys.argv)):
         result = sys.argv[i]
         with open(result, "r") as f:
             tests = json.load(f)
