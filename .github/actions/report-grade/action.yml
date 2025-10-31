@@ -4,7 +4,7 @@ author: dennuguyen
 
 inputs:
   results:
-    description: Comma-separated string of test results file(s)
+    description: Space-separated string of test results file(s)
     required: true
     type: string
 
