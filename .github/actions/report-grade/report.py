@@ -10,9 +10,9 @@ def diff(text1: str, text2: str) -> str:
     colored_output = []
     for line in diff:
         if line.startswith('+'):
-            colored_output.append(f"{Fore.GREEN}{Back.LIGHTGREEN_EX}{line}{Style.RESET_ALL}")
+            colored_output.append(f"{Back.GREEN}{line}{Style.RESET_ALL}")
         elif line.startswith('-'):
-            colored_output.append(f"{Fore.RED}{Back.LIGHTRED_EX}{line}{Style.RESET_ALL}")
+            colored_output.append(f"{Back.RED}{line}{Style.RESET_ALL}")
         else:
             colored_output.append(line)
     return "\n".join(colored_output)
