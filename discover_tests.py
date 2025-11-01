@@ -24,7 +24,7 @@ def _extract_testcase_metadata(code: List[str], row: int) -> TestCase:
         if key:
             metadata[key] = value
         row -= 1
-    return TestCase(**metadata).model_dump(exclude_none=True)
+    return TestCase(**metadata)
 
 def _extract_test_name(code: str) -> Tuple[Optional[str], Optional[str]]:
     """
@@ -43,7 +43,7 @@ def discover_testcases(code: str) -> List[TestCase]:
             suite_name, case_name = _extract_test_name(code[row])
             if suite_name and case_name:
                 metadata = _extract_testcase_metadata(code, row)
-                metadata["id"] = f"{suite_name}.{case_name}"
+                metadata.id = f"{suite_name}.{case_name}"
                 testcases.append(metadata)
     return testcases
 
@@ -52,13 +52,13 @@ def discover_testsuite(code: str) -> TestSuite:
     Scans the first lines of the file for testsuite metadata.
     """
     row = 0
-    metadata = {}
+    metadata = TestSuite()
     while code[row].startswith("//@"):
         key, value = _extract_metadata(code[row])
         if key:
             metadata[key] = value
         row += 1
-    return TestSuite(**metadata)
+    return metadata
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -68,6 +68,7 @@ if __name__ == "__main__":
     test_file = sys.argv[1]
     code = Path(test_file).read_text().splitlines()
     suite = discover_testsuite(code)
+    suite.name = suite.name or test_file
     tests = discover_testcases(code)
     suite.tests = TypeAdapter(List[TestCase]).validate_python(tests)
     output = suite.model_dump_json(exclude_none=True)
