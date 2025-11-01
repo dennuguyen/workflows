@@ -1,0 +1,2 @@
+build_gtest_suite(test_stage1)
+build_gtest_suite(test_stage2)

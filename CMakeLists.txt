@@ -23,5 +23,4 @@ macro(build_gtest_suite TEST)
     gtest_discover_tests(${TEST})
 endmacro()
 
-build_gtest_suite(test_stage1)
-build_gtest_suite(test_stage2)
+add_subdirectory(test)
