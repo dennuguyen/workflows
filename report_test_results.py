@@ -56,8 +56,11 @@ def print_test_case(test: json, i: int) -> bool:
         format["name"] = "(hidden test)"
     else:
         format["name"] = name
+        if score and max_score:
+            format["points"] = f" ({score}/{max_score} points)"
         if score:
             format["points"] = f" ({score} points)"
+            
 
     line = line.format(**format)
     print(line)
