@@ -60,10 +60,10 @@ def print_testsuite(suite: TestSuite):
 
 def notify_classroom(score: int, max_score: int):
     text = f"Points {score}/{max_score}"
-    core.notice(text, { "title": "Autograding complete" })
+    core.notice(text, properties={ "title": "Autograding complete" })
 
     summary = json.dumps({ "totalPoints": score, "maxPoints": max_score })
-    core.notice(summary, { "title": "Autograding report" })
+    core.notice(summary, properties={ "title": "Autograding report" })
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
