@@ -4,6 +4,8 @@ import subprocess
 import sys
 import tempfile
 
+from test_metadata import TestSuite
+
 SANITISER_ERROR = 2
 
 test_env_vars = {
@@ -18,82 +20,77 @@ def extract_sanitiser_summary(sanitiser_summary: str) -> str:
     prefix = "SUMMARY:"
     return next((line.removeprefix(prefix).strip() for line in sanitiser_summary.splitlines() if line.startswith(prefix)), "")
 
-def run_tests(test_executable: str, tests: list[object]):
-    for test in tests:
-        # Get testcase ID to run test runner.
-        id = test["id"]
-        if "name" not in test:
-            test["name"] = id
-        
-        # Set initial conditions.
-        test["ok"] = True
-        test["passed"] = False
+def run_tests(test_executable: str, suite: TestSuite) -> TestSuite:
+    for test in suite.tests:
+        test.passed = False
 
         # Run test.
         with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as temp:
             out = subprocess.run(
-                [test_executable, f"--gtest_filter={id}", f"--gtest_output=json:{temp.name}"],
+                [test_executable, f"--gtest_filter={test.id}", f"--gtest_output=json:{temp.name}"],
                 env={**os.environ, **test_env_vars},
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
 
             if out.returncode == SANITISER_ERROR:
-                test["feedback"] = extract_sanitiser_summary(out.stderr.decode("utf-8", errors="replace"))
+                test.feedback = extract_sanitiser_summary(out.stderr.decode("utf-8", errors="replace"))
                 continue
 
             if out.returncode not in (0, 1):
                 if "observed" not in test or test["observed"] == "":
-                    test["feedback"] = "Uncaught runtime error"
+                    test.feedback = "Uncaught runtime error"
                     continue
 
-            # TODO: move this logic into TestMetadata
+            # Get to relevant data from test output.
             testworld_detail = json.load(temp)
             testsuite_detail = testworld_detail["testsuites"][0]
             testcase_detail = testsuite_detail["testsuite"][0]
-            test["passed"] = not testsuite_detail["failures"]
-            if "score" in testcase_detail:
-                test["score"] = float(testcase_detail["score"])
-            if "min_score" in testcase_detail:
-                test["min_score"] = float(testcase_detail["min_score"])
-            if "max_score" in testcase_detail:
-                test["max_score"] = float(testcase_detail["max_score"])
-            if "hidden" in testcase_detail:
-                test["hidden"] = bool(testcase_detail["hidden"])
-            if "secret" in testcase_detail:
-                test["secret"] = bool(testcase_detail["secret"])
-            if "expected" in testcase_detail:
-                test["expected"] = testcase_detail["expected"]
-            if "observed" in testcase_detail:
-                test["observed"] = testcase_detail["observed"]
-            if "failures" in testcase_detail:
-                test["feedback"] = testcase_detail["failures"][0]["failure"]
-    return tests
 
-def normalise_scores(result: list[object]) -> list[object]:
+            # Get runtime metadata from running tests.
+            test.passed = not testsuite_detail["failures"]
+            test.score = testcase_detail.get("score", test.score)
+            test.penalty = testcase_detail.get("penalty", test.penalty)
+            test.hidden = testcase_detail.get("hidden", False)
+            test.secret = testcase_detail.get("secret", False)
+            test.expected = testcase_detail.get("expected", None)
+            test.observed = testcase_detail.get("observed", None)
+            if "failures" in testcase_detail:
+                test.feedback = testcase_detail["failures"][0]["failure"]
+    return suite
+
+def normalise_scores(suite: TestSuite) -> TestSuite:
     """
-    Re-adjust scores according to min_score and max_score.
+    Re-adjust scores and penalties.
     """
-    return result
+    for test in suite.tests:
+        if test.penalty:
+            test.penalty = test.penalty or -1
+            test.penalty = -abs(test.penalty)
+            suite.score += test.penalty
+        else:
+            test.score = test.score or 1
+            suite.score += test.score
+            suite.max_score += test.score
+    return suite
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: run_tests.py <test_executable> <test_input> [output_file]", file=sys.stderr)
+        print("Usage: run_tests.py <test_executable> <test_configuration> [output_file]", file=sys.stderr)
         sys.exit(1)
 
-    test_executable = sys.argv[1]
-    test_input = sys.argv[2]
+    test_exec = sys.argv[1]
+    test_conf = sys.argv[2]
 
-    tests = json.load(open(test_input, "r"))
-    result = run_tests(test_executable, tests)
-    result = normalise_scores(result)
-
-    # TODO: Add test suite metadata.
-
-    output = json.dumps(result)
+    suite = TestSuite(**json.load(open(test_conf, "r")))
+    suite = run_tests(test_exec, suite)
+    suite = normalise_scores(suite)
+    output = suite.model_dump_json()
 
     # Write JSON to output file if provided.
     if len(sys.argv) > 3:
         output_file = sys.argv[3]
         with open(output_file, "w") as f:
             f.write(output)
+
+    print(output)

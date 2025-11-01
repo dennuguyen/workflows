@@ -1,5 +1,3 @@
-import json
-
 from pydantic import BaseModel, field_validator
 from typing import List, Optional
 
@@ -15,9 +13,7 @@ class TestMetadata(BaseModel, AttrMixin):
     hidden: Optional[bool] = None
     secret: Optional[bool] = None
     score: Optional[float] = None
-    min_score: Optional[float] = None
-    max_score: Optional[float] = None
-    ok: Optional[bool] = None
+    penalty: Optional[float] = None
     passed: Optional[bool] = None
     feedback: Optional[str] = None
     expected: Optional[str] = None
@@ -38,5 +34,6 @@ class TestMetadata(BaseModel, AttrMixin):
 
 class TestSuite(BaseModel, AttrMixin):
     name: Optional[str] = None
-    max_score: Optional[float] = None
+    score: float = 0
+    max_score: float = 0
     tests: List[TestMetadata] = []

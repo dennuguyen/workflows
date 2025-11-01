@@ -24,11 +24,11 @@ runs:
     run: |
       TEST_FILE="${{ inputs.target }}.cpp"
       TEST_EXEC="build/${{ inputs.target }}"
-      DISCOVERED_FILE=$(mktemp)
+      TEST_CONFIG=$(mktemp)
       RESULT_FILE="${{ inputs.target }}.result.json"
       REPORT_FILE="${{ inputs.target }}.report.json"
 
-      python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $DISCOVERED_FILE > /dev/null
-      python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $DISCOVERED_FILE $RESULT_FILE > /dev/null
+      python3 ./.github/actions/run-gtest/discover_tests.py $TEST_FILE $TEST_CONFIG > /dev/null
+      python3 ./.github/actions/run-gtest/run_tests.py $TEST_EXEC $TEST_CONFIG $RESULT_FILE > /dev/null
 
       echo "result=$RESULT_FILE" >> $GITHUB_OUTPUT
