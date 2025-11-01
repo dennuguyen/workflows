@@ -47,12 +47,21 @@ def run_tests(test_executable: str, tests: list[object]):
                     test["feedback"] = "Uncaught runtime error"
                     continue
 
+            # TODO: move this logic into TestMetadata
             testworld_detail = json.load(temp)
             testsuite_detail = testworld_detail["testsuites"][0]
             testcase_detail = testsuite_detail["testsuite"][0]
             test["passed"] = not testsuite_detail["failures"]
             if "score" in testcase_detail:
                 test["score"] = float(testcase_detail["score"])
+            if "min_score" in testcase_detail:
+                test["min_score"] = float(testcase_detail["min_score"])
+            if "max_score" in testcase_detail:
+                test["max_score"] = float(testcase_detail["max_score"])
+            if "hidden" in testcase_detail:
+                test["hidden"] = bool(testcase_detail["hidden"])
+            if "secret" in testcase_detail:
+                test["secret"] = bool(testcase_detail["secret"])
             if "expected" in testcase_detail:
                 test["expected"] = testcase_detail["expected"]
             if "observed" in testcase_detail:
@@ -60,6 +69,12 @@ def run_tests(test_executable: str, tests: list[object]):
             if "failures" in testcase_detail:
                 test["feedback"] = testcase_detail["failures"][0]["failure"]
     return tests
+
+def normalise_scores(result: list[object]) -> list[object]:
+    """
+    Re-adjust scores according to min_score and max_score.
+    """
+    return result
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -71,9 +86,11 @@ if __name__ == "__main__":
 
     tests = json.load(open(test_input, "r"))
     result = run_tests(test_executable, tests)
-    output = json.dumps(result)
+    result = normalise_scores(result)
 
     # TODO: Add test suite metadata.
+
+    output = json.dumps(result)
 
     # Write JSON to output file if provided.
     if len(sys.argv) > 3:

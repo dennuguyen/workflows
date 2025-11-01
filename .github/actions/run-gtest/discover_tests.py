@@ -3,26 +3,31 @@ import re
 import sys
 
 from pathlib import Path
-from typing import Optional, Dict, List, Tuple, Any
+from pydantic import TypeAdapter
+from test_metadata import TestMetadata, TestSuite
+from typing import List, Optional, Tuple
 
-from test_metadata import TestMetadata
+def _extract_metadata(line: str) -> Tuple[Optional[str], Optional[str]]:
+    m = re.match(r"\/\/@(\w+)\s*(.*)", line)
+    if m:
+        key = m.group(1)
+        value = m.group(2) or True
+    return key, value
 
-def extract_test_metadata(code: List[str], row: int) -> Dict[str, Any]:
+def _extract_testcase_metadata(code: List[str], row: int) -> TestMetadata:
     """
     Scans previous lines from the given line for testcase metadata.
     """
     row -= 1
     metadata = {}
     while row >= 0 and code[row].startswith("//@"):
-        m = re.match(r"\/\/@(\w+)\s*(.*)", code[row])
-        if m:
-            key = m.group(1)
-            value = m.group(2) or True
+        key, value = _extract_metadata(code[row])
+        if key:
             metadata[key] = value
         row -= 1
     return TestMetadata(**metadata).model_dump(exclude_none=True)
 
-def extract_test_name(code: str) -> Tuple[Optional[str], Optional[str]]:
+def _extract_test_name(code: str) -> Tuple[Optional[str], Optional[str]]:
     """
     Gets the test suite and case names from the TEST macro.
     """
@@ -30,34 +35,48 @@ def extract_test_name(code: str) -> Tuple[Optional[str], Optional[str]]:
     if m:
         testsuite_name = m.group(2)
         testcase_name = m.group(3)
-        return testsuite_name, testcase_name
-    return None, None
+    return testsuite_name, testcase_name
 
-def discover_testcases(test_file: str) -> List[Dict[str, Any]]:
-    code = Path(test_file).read_text().splitlines()
-    testcases = []
+def discover_testcases(code: str) -> List[TestMetadata]:
+    testcases = list[TestMetadata]()
     for row, line in enumerate(code):
         if line.startswith("TEST"):
-            suite_name, case_name = extract_test_name(code[row])
+            suite_name, case_name = _extract_test_name(code[row])
             if suite_name and case_name:
-                metadata = extract_test_metadata(code, row)
-                testcases.append({
-                    "id": f"{suite_name}.{case_name}",
-                    **metadata
-                })
+                metadata = _extract_testcase_metadata(code, row)
+                metadata["id"] = f"{suite_name}.{case_name}"
+                testcases.append(metadata)
     return testcases
+
+def discover_testsuite(code: str) -> TestSuite:
+    """
+    Scans the first lines of the file for testsuite metadata.
+    """
+    row = 0
+    metadata = {}
+    while code[row].startswith("//@"):
+        key, value = _extract_metadata(code[row])
+        if key:
+            metadata[key] = value
+        row += 1
+    return TestSuite(**metadata)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: discover_tests.py <test_file> [output_file]", file=sys.stderr)
         sys.exit(1)
-    
+
     test_file = sys.argv[1]
-    tests = discover_testcases(test_file)
-    output = json.dumps(tests)
-    
+    code = Path(test_file).read_text().splitlines()
+    suite = discover_testsuite(code)
+    tests = discover_testcases(code)
+    suite.tests = TypeAdapter(List[TestMetadata]).validate_python(tests)
+    output = suite.model_dump_json(exclude_none=True)
+
     # Write JSON to output file if provided.
     if len(sys.argv) > 2:
         output_file = sys.argv[2]
         with open(output_file, "w") as f:
             f.write(output)
+
+    print(output)
