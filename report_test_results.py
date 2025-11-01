@@ -54,6 +54,7 @@ def print_testcase(test: TestCase) -> bool:
         show_feedback(test.feedback, test.expected, test.observed)
 
 def print_testsuite(suite: TestSuite):
+    print("🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀")
     line = f"{suite.name} ({suite.score}/{suite.max_score})"
     print(f"{Fore.green if suite.score == suite.max_score else Fore.red}{Style.bold}{line}{Style.reset}")
 
@@ -69,3 +70,4 @@ if __name__ == "__main__":
             print_testsuite(suite)
             for test in suite.tests:
                 print_testcase(test)
+            print("\n")
