@@ -4,7 +4,7 @@ import subprocess
 import sys
 import tempfile
 
-from test_metadata import TestSuite
+from testing_model import TestSuite
 
 SANITISER_ERROR = 2
 

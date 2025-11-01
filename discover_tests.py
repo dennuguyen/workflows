@@ -3,7 +3,7 @@ import sys
 
 from pathlib import Path
 from pydantic import TypeAdapter
-from test_metadata import TestMetadata, TestSuite
+from testing_model import TestCase, TestSuite
 from typing import List, Optional, Tuple
 
 def _extract_metadata(line: str) -> Tuple[Optional[str], Optional[str]]:
@@ -13,7 +13,7 @@ def _extract_metadata(line: str) -> Tuple[Optional[str], Optional[str]]:
         value = m.group(2) or True
     return key, value
 
-def _extract_testcase_metadata(code: List[str], row: int) -> TestMetadata:
+def _extract_testcase_metadata(code: List[str], row: int) -> TestCase:
     """
     Scans previous lines from the given line for testcase metadata.
     """
@@ -24,7 +24,7 @@ def _extract_testcase_metadata(code: List[str], row: int) -> TestMetadata:
         if key:
             metadata[key] = value
         row -= 1
-    return TestMetadata(**metadata).model_dump(exclude_none=True)
+    return TestCase(**metadata).model_dump(exclude_none=True)
 
 def _extract_test_name(code: str) -> Tuple[Optional[str], Optional[str]]:
     """
@@ -36,8 +36,8 @@ def _extract_test_name(code: str) -> Tuple[Optional[str], Optional[str]]:
         testcase_name = m.group(3)
     return testsuite_name, testcase_name
 
-def discover_testcases(code: str) -> List[TestMetadata]:
-    testcases = list[TestMetadata]()
+def discover_testcases(code: str) -> List[TestCase]:
+    testcases = list[TestCase]()
     for row, line in enumerate(code):
         if line.startswith("TEST"):
             suite_name, case_name = _extract_test_name(code[row])
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     code = Path(test_file).read_text().splitlines()
     suite = discover_testsuite(code)
     tests = discover_testcases(code)
-    suite.tests = TypeAdapter(List[TestMetadata]).validate_python(tests)
+    suite.tests = TypeAdapter(List[TestCase]).validate_python(tests)
     output = suite.model_dump_json(exclude_none=True)
 
     # Write JSON to output file if provided.

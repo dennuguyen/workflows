@@ -7,7 +7,7 @@ class AttrMixin:
     def __setitem__(self, key, value):
         return setattr(self, key, value)
 
-class TestMetadata(BaseModel, AttrMixin):
+class TestCase(BaseModel, AttrMixin):
     id: Optional[str] = None
     name: Optional[str] = None
     hidden: Optional[bool] = None
@@ -36,4 +36,4 @@ class TestSuite(BaseModel, AttrMixin):
     name: Optional[str] = None
     score: float = 0
     max_score: float = 0
-    tests: List[TestMetadata] = []
+    tests: List[TestCase] = []
