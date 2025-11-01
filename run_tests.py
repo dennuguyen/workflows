@@ -12,7 +12,7 @@ test_env_vars = {
     "ASAN_OPTIONS": f"print_summary=1:verbosity=0:exitcode={SANITISER_ERROR}"
 }
 
-def extract_sanitiser_summary(sanitiser_summary: str) -> str:
+def _extract_sanitiser_summary(sanitiser_summary: str) -> str:
     """
     Sanitisers will print a lot of hard-to-read junk so this function collects
     the line that starts with SUMMARY:
@@ -34,7 +34,7 @@ def run_tests(test_executable: str, suite: TestSuite) -> TestSuite:
             )
 
             if out.returncode == SANITISER_ERROR:
-                test.feedback = extract_sanitiser_summary(out.stderr.decode("utf-8", errors="replace"))
+                test.feedback = _extract_sanitiser_summary(out.stderr.decode("utf-8", errors="replace"))
                 continue
 
             if out.returncode not in (0, 1):

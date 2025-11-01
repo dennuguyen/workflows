@@ -6,7 +6,7 @@ import sys
 from actions_toolkit import core
 from colored import Fore, Back, Style
 
-def print_diff(text1: str, text2: str) -> str:
+def _print_diff(text1: str, text2: str) -> str:
     columns = shutil.get_terminal_size().columns
     diff = difflib.ndiff(text1.splitlines(), text2.splitlines())
     for line in diff:
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         result = sys.argv[i]
         with open(result, "r") as f:
             tests = json.load(f)
-            total_passed, total_tests = print_test_suite(tests)
+            total_passed, total_tests = print_testsuite(tests)
             grand_total_passed += total_passed
             grand_total_tests += total_tests
 
