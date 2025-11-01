@@ -58,10 +58,20 @@ def print_testsuite(suite: TestSuite):
     line = f"{suite.name} ({suite.score}/{suite.max_score})"
     print(f"{Fore.green if suite.score == suite.max_score else Fore.red}{Style.bold}{line}{Style.reset}")
 
+def notify_classroom(score: int, max_score: int):
+    text = f"Points {score}/{max_score}"
+    core.notice(text, { "title": "Autograding complete" })
+
+    summary = json.dumps({ "totalPoints": score, "maxPoints": max_score })
+    core.notice(summary, { "title": "Autograding report" })
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: report.py <result_files>", file=sys.stderr)
         sys.exit(1)
+
+    grand_score = 0
+    grand_max_score = 0
 
     for i in range(1, len(sys.argv)):
         result = sys.argv[i]
@@ -70,3 +80,8 @@ if __name__ == "__main__":
             print_testsuite(suite)
             for test in suite.tests:
                 print_testcase(test)
+
+            grand_score += suite.score
+            grand_max_score += suite.max_score
+    
+    notify_classroom(grand_score, grand_max_score)
