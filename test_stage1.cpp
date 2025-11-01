@@ -3,7 +3,7 @@
 #include "hello.hpp"
 
 //@name Hello world test
-//@score 2
+//@max_score 2
 //@hidden true
 TEST(HelloWorldTest, BasicAssertions) {
     // Expect two strings to be equal.
@@ -16,7 +16,8 @@ TEST(GoodbyeTest, BasicAssertions) {
     RecordProperty("expected", "Goodbye World!");
 }
 
-//@penalty -1
+//@min_score -1
+//@max_score 0
 TEST(ThisShouldFail, TestCase) {
     RecordProperty("observed", "failed");
     EXPECT_EQ("ada", "failed");

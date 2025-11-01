@@ -50,7 +50,8 @@ def run_tests(test_executable: str, suite: TestSuite) -> TestSuite:
             # Get runtime metadata from running tests.
             test.passed = not testsuite_detail["failures"]
             test.score = testcase_detail.get("score", test.score)
-            test.penalty = testcase_detail.get("penalty", test.penalty)
+            test.min_score = testcase_detail.get("min_score", test.min_score)
+            test.max_score = testcase_detail.get("max_score", test.max_score)
             test.hidden = testcase_detail.get("hidden", False)
             test.secret = testcase_detail.get("secret", False)
             test.expected = testcase_detail.get("expected", None)
@@ -64,14 +65,11 @@ def normalise_scores(suite: TestSuite) -> TestSuite:
     Re-adjust scores and penalties.
     """
     for test in suite.tests:
-        if test.penalty:
-            test.penalty = test.penalty or -1
-            test.penalty = -abs(test.penalty)
-            suite.score += test.penalty
-        else:
-            test.score = test.score or 1
-            suite.score += test.score
-            suite.max_score += test.score
+        test.score = test.score or test.max_score if test.passed else test.min_score
+        test.score = max(test.score, test.min_score)
+        test.score = min(test.score, test.max_score)
+        suite.score += test.score
+        suite.max_score += test.max_score
     return suite
 
 if __name__ == "__main__":

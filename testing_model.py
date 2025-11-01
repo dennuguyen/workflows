@@ -13,7 +13,8 @@ class TestCase(BaseModel, AttrMixin):
     hidden: Optional[bool] = None
     secret: Optional[bool] = None
     score: Optional[float] = None
-    penalty: Optional[float] = None
+    min_score: float = 0
+    max_score: float = 1
     passed: Optional[bool] = None
     feedback: Optional[str] = None
     expected: Optional[str] = None
