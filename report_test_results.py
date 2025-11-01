@@ -70,4 +70,3 @@ if __name__ == "__main__":
             print_testsuite(suite)
             for test in suite.tests:
                 print_testcase(test)
-            print("\n")
